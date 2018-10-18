@@ -39,7 +39,7 @@ app.use(passport.initialize());
 router(app);
 app.use(function (err, req, res, next) {
 	console.error('Well, its embarassing! Server just got crashed...', err);
-	return res(500).send({error: 'Internal Server Error Has Occured! What a Shame...'});
+	return res.status(500).send({error: 'Internal Server Error Has Occured! What a Shame...'});
 });
 
 app.listen(4000);
