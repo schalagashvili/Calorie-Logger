@@ -1,0 +1,19 @@
+.MuiInput-underline-13:before {
+  display: none;
+}
+
+.MuiInput-underline-13:after {
+  display: none;
+}
+
+.MuiInputBase-input-32 {
+  font-family: QuicksandRegular !important;
+}
+
+.MuiInputBase-root-22
+  .MuiFormControl-root-5
+  .MuiInputBase-inputType-35
+  .DatePickers-textField-4
+  .TimePickers-textField-40 {
+  background-color: white;
+}

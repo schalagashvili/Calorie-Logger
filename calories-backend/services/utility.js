@@ -3,17 +3,17 @@ import jwt from 'jwt-simple';
 import secret from '../secret';
 
 // generates tokens for users
-exports.tokenForUser = function (user) {
+exports.tokenForUser = function(user) {
 	const timestamp = new Date().getTime();
 	return jwt.encode({ sub: user.id, iat: timestamp }, secret);
 };
 
-exports.validateEmail = function (email) {
+exports.validateEmail = function(email) {
 	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return re.test(email);
 };
 
-exports.addMealLog = function (user, req, res) {
+exports.addMealLog = function(user, req, res) {
 	const { title, date, calories } = req.body;
 	const logs = user.mealLog;
 	const log = {
@@ -22,28 +22,27 @@ exports.addMealLog = function (user, req, res) {
 		date: new Date()
 	};
 	logs.push(log);
-	console.log(logs);
 	user.mealLog = logs;
-	user.save((err) => {
+	user.save(err => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify(user)); 
+		return res.status(200).send(JSON.stringify(user));
 	});
 };
 
-exports.removeMealLog = function (user, req, res) {
+exports.removeMealLog = function(user, req, res) {
 	const logId = req.params.logId;
 	let logs = user.mealLog;
-	logs = logs.filter((doc) => {
+	logs = logs.filter(doc => {
 		return doc._id != logId;
 	});
 	user.mealLog = logs;
-	user.save((err) => {
+	user.save(err => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify(user)); 
+		return res.status(200).send(JSON.stringify(user));
 	});
 };
 
-exports.editMealLog = function (user, req, res) {
+exports.editMealLog = function(user, req, res) {
 	const logId = req.params.logId;
 	const { title, date, calories } = req.body;
 	let logs = user.mealLog;
@@ -55,17 +54,15 @@ exports.editMealLog = function (user, req, res) {
 	editLog.title = title || editLog.title;
 	editLog.date = date || editLog.date;
 	editLog.calories = calories || editLog.calories;
-	console.log(editLog);
 	logs[logIndex] = editLog;
 	user.mealLog = logs;
-	console.log(user.mealLog);
-	user.save((err) => {
+	user.save(err => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify(user)); 
+		return res.status(200).send(JSON.stringify(user));
 	});
 };
 
-exports.getUser = function (user, req, res) {
+exports.getUser = function(user, req, res) {
 	let userObj = {
 		email: user.email,
 		createdAt: user.createdAt,
@@ -73,14 +70,16 @@ exports.getUser = function (user, req, res) {
 		expectedCalories: user.expectedCalories,
 		logCount: user.mealLog.length
 	};
-	return res.status(200).send({user: userObj});
+	return res.status(200).send({ user: userObj });
 };
 
-exports.editUser = function (user, req, res) {
+exports.editUser = function(user, req, res, isAdmin) {
 	const { role, expectedCalories } = req.body;
-	user.role = role || user.role;
+	if (isAdmin) {
+		user.role = role || user.role;
+	}
 	user.expectedCalories = expectedCalories || user.expectedCalories;
-	user.save((err) => {
+	user.save(err => {
 		if (err) return res.status(500).send();
 		return res.status(200).send(JSON.stringify(user));
 	});
