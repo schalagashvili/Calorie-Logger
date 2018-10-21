@@ -37,15 +37,17 @@ const style = {
 }
 
 function DatePickers(props) {
-  const { classes, headerText } = props
+  const { classes, headerText, onChange } = props
 
   return (
     <Wrapper>
       <InputHeader>{headerText}</InputHeader>
       <TextField
         id="date"
+        onChange={(e) => onChange(e)}
         type="date"
-        defaultValue={props.date || new Date().toISOString().substr(0, 10)}
+        value={props.date || new Date().toISOString().substr(0, 10)} 
+        // defaultValue={props.date || new Date().toISOString().substr(0, 10)}
         className={classes.textField}
         InputLabelProps={{
           shrink: true

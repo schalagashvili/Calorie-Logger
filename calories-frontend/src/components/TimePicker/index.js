@@ -28,21 +28,22 @@ const style = {
 }
 
 function TimePickers(props) {
-  const { classes, headerText, marginRight, marginLeft } = props
-
+  const { classes, headerText, marginRight, marginLeft, onChange } = props
   return (
     <Wrapper marginRight={marginRight} marginLeft={marginLeft}>
       <InputHeader>{headerText}</InputHeader>
       <TextField
         id="time"
         type="time"
-        defaultValue={props.time || new Date().toTimeString().substr(0, 5)}
+        value={props.time || new Date().toTimeString().substr(0, 5)}
+        onChange={(e) => onChange(e)}
+        // defaultValue={props.time || new Date().toTimeString().substr(0, 5)}
         className={classes.textField}
         InputLabelProps={{
           shrink: true
         }}
         inputProps={{
-          step: 300
+          step: 60
         }}
         style={style}
       />

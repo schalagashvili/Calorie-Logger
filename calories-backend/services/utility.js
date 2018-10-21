@@ -19,13 +19,13 @@ exports.addMealLog = function(user, req, res) {
 	const log = {
 		title,
 		calories: parseFloat(calories),
-		date: new Date()
+		date
 	};
 	logs.push(log);
 	user.mealLog = logs;
-	user.save(err => {
+	user.save((err, newUser) => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify(user));
+		return res.status(200).send(JSON.stringify({_id: newUser.mealLog[newUser.mealLog.length - 1]._id}));
 	});
 };
 
@@ -36,9 +36,9 @@ exports.removeMealLog = function(user, req, res) {
 		return doc._id != logId;
 	});
 	user.mealLog = logs;
-	user.save(err => {
+	user.save((err, newUser) => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify(user));
+		return res.status(200).send(JSON.stringify(newUser));
 	});
 };
 
@@ -67,8 +67,7 @@ exports.getUser = function(user, req, res) {
 		email: user.email,
 		createdAt: user.createdAt,
 		role: user.role,
-		expectedCalories: user.expectedCalories,
-		logCount: user.mealLog.length
+		expectedCalories: user.expectedCalories
 	};
 	return res.status(200).send({ user: userObj });
 };

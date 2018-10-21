@@ -19,6 +19,13 @@ export const ErrorText = styled.p`
   font-family: QuicksandRegular;
 `
 
+export const SaveErrorText = styled.span`
+  color: red;
+  font-size: 12px;
+  font-family: QuicksandRegular;
+  margin-top: 10px;
+`
+
 export const LoginContainer = styled.div`
   width: 400px;
   height: 500px;

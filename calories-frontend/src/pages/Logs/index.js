@@ -1,34 +1,33 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Spinner from 'react-spinkit'
+import moment from 'moment'
 import {
   HeaderDecoration,
   Wrapper,
-  NavigationTab,
   Add,
   AddContainer,
   Button,
-  Title,
   InnerWrapper,
   Record,
   Records,
   IconsWrapper,
   RecordsHeader,
   CaloriesInfo,
-  AddButton,
-  ButtonText,
   UpdateButton,
   SearchButton,
-  AddRecordButton
+  AddRecordButton,
+  FilterWrapper
 } from './styles'
+import { SaveErrorText } from '../SignUp/styles'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
 import { DatePicker, TimePicker } from '../../components'
 import { Input } from '../../styles/mixins'
-import logo from '../../assets/logos/brand-logo.png'
 import TweenLite from 'gsap'
 import BaseHeader from '../../components/BaseHeader'
 import { AuthConsumer } from '../../AuthContext'
 import config from '../../config'
+import { insertFunc } from '../../utility'
 
 class Logs extends Component {
   constructor(props) {
@@ -44,8 +43,17 @@ class Logs extends Component {
       dateFrom: today,
       dateTo: today,
       timeFrom: '00:00',
+      addTitle: '',
+      addCalories: '',
+      addDate: '',
       timeTo: new Date().toTimeString().substr(0, 5)
     }
+    this.onFromDateChange = this.onFromDateChange.bind(this)
+    this.onToDateChange = this.onToDateChange.bind(this)
+    this.onFromTimeChange = this.onFromTimeChange.bind(this)
+    this.onToTimeChange = this.onToTimeChange.bind(this)
+    this.onAddDateChange = this.onAddDateChange.bind(this)
+    this.onAddTimeChange = this.onAddTimeChange.bind(this)
   }
 
   componentDidMount() {
@@ -63,8 +71,12 @@ class Logs extends Component {
         headers: { authorization: token }
       })
       .then(response => {
-        console.log(response.data.logs)
-        this.setState({ mealLogs: response.data.logs || [] })
+        let totalCalories = 0
+        const mealLogs = response.data.logs
+        if (mealLogs != null) {
+          mealLogs.map((log) => totalCalories += log.calories)
+        }
+        this.setState({ mealLogs: mealLogs != null ? mealLogs.reverse() : [], totalCalories })
       })
   }
 
@@ -72,14 +84,21 @@ class Logs extends Component {
     this.setState({ searchLoading: true })
   }
 
-  editOpenHandler = isAdd => {
+  editOpenHandler = (isAdd, id) => {
     const { isEditMealShowing } = this.state
-
     if (!isEditMealShowing) {
-      TweenLite.to('#edit-meal', 0.4, { height: '365px', borderBottom: '1px solid #dce0e0' })
+      TweenLite.to('#edit-meal', 0.4, { height: '400px', borderBottom: '1px solid #dce0e0' })
     }
-
-    this.setState({ isEditMealShowing: true, isAdd })
+    if (isAdd) {
+      const addDate = new Date().toISOString().substr(0, 10)
+      const addTime = new Date().toTimeString().substr(0, 5)
+      this.setState({ isEditMealShowing: true, isAdd, addDate, addTime })
+    } else {
+      const editLog = this.state.mealLogs.filter((log) => log._id === id)[0]
+      const addDate = new Date(editLog.date).toISOString().substr(0, 10)
+      const addTime = new Date(editLog.date).toTimeString().substr(0, 5)
+      this.setState({ editId: id, isEditMealShowing: true, isAdd, addDate, addTime, addTitle: editLog.title, addCalories: editLog.calories })
+    }
   }
 
   editCloseHandler = () => {
@@ -115,6 +134,139 @@ class Logs extends Component {
     })
   }
 
+  onAddDateChange(e) {
+    this.setState({ addDate: e.target.value})
+  }
+
+  onAddTimeChange(e) {
+    this.setState({ addTime: e.target.value})
+  }
+
+  onAddTitleChange(e) {
+    this.setState({ addTitle: e.target.value })
+  }
+
+  onAddCaloriesChange(e) {
+    let calories = e.target.value
+    if (calories < 0) {
+      calories *= -1
+    }
+    this.setState({ addCalories: parseFloat(calories) })
+  }
+
+  onSave() {
+    let { addDate, addTime, addTitle, addCalories, isAdd } = this.state
+    if (addTitle == null || addCalories == null) {
+      return this.setState({ saveError: 1, saveErrorText: 'Please fill in all fields'})
+    }
+    this.setState({addDate: '' ,addTime: '', addTitle: '', addCalories: ''})
+    const datetime = moment(`${addDate} ${addTime}`, 'YYYY-MM-DD hh:mm').toDate()
+    const userId = this.props.match.params.userId
+    if (isAdd) {
+      axios({
+        method: 'post',
+        url: `${config.apiUrl}/addMealLog/${userId != null ? userId : ''}`,
+        headers: { authorization: this.props.token },
+        data: {
+        title: addTitle,
+        calories: addCalories,
+        date: datetime
+      }}).then((response) => {
+        const _id = response.data._id
+        let mealLogs = this.state.mealLogs
+        let totalCalories = 0
+        mealLogs = insertFunc(mealLogs, 0, {title: addTitle, calories: addCalories, date: datetime, _id})
+        if (mealLogs != null) {
+          mealLogs.map((log) => totalCalories += log.calories)
+        }
+        this.setState({mealLogs, totalCalories})
+      })
+    } else {
+      axios({
+        method: 'post',
+        url: `${config.apiUrl}/editMealLog/${this.state.editId}/${userId != null ? userId : ''}`,
+        headers: { authorization: this.props.token },
+        data: {
+        title: addTitle,
+        calories: addCalories,
+        date: datetime
+      }}).then((response) => {
+        let mealLogs = this.state.mealLogs
+        let totalCalories = 0
+        const editedLogIndex = mealLogs.findIndex((log) => log._id === this.state.editId)
+        if (editedLogIndex === -1) {return}
+        mealLogs[editedLogIndex] = { _id: this.state.editId, title: addTitle, calories: addCalories, date: datetime}
+        if (mealLogs != null) {
+          mealLogs.map((log) => totalCalories += log.calories)
+        }
+        this.setState({mealLogs, totalCalories})
+      })
+    }
+    this.editCloseHandler()
+  }
+
+  onFromDateChange(e) {
+    this.setState({ fromDate: e.target.value })
+  }
+
+  onToDateChange(e) {
+    this.setState({ toDate: e.target.value })
+  }
+
+  onFromTimeChange(e) {
+    this.setState({ fromTime: e.target.value })
+  }
+
+  onToTimeChange(e) {
+    this.setState({ toTime: e.target.value })
+  }
+
+  onDelete(id) {
+    console.log('deleting: ', id)
+    const userId = this.props.match.params.userId
+    axios({
+      method: 'post',
+      url: `${config.apiUrl}/removeMealLog/${id}/${userId != null ? userId : ''}`,
+      headers: { authorization: this.props.token }
+    }).then(() => {
+      let mealLogs = this.state.mealLogs
+      mealLogs = mealLogs.filter((log) => log._id !== id)
+      let totalCalories = 0
+      if (mealLogs != null) {
+        mealLogs.map((log) => totalCalories += log.calories)
+      }
+      this.setState({mealLogs, totalCalories})
+    })
+  }
+
+  renderRecords() {
+    let { mealLogs } = this.state
+    return mealLogs.map((log) => {
+      let { date, calories, title, _id} = log
+      date = moment(date).format('YYYY-MM-DD hh:mm')
+      return (
+        <Record key={_id}>
+        <div style={{ flex: 1 }}>{date}</div>
+        <div style={{ flex: 1 }}>{title}</div>
+        <div style={{ flex: 1, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>{calories} cal</div>
+        <IconsWrapper style={{ flex: 0.2 }}>
+          <div onClick={() => this.editOpenHandler(false, _id)}>
+            <EditIcon
+              width={13}
+              height={13}
+              color="gray"
+              styles={{ cursor: 'pointer' }}
+            />
+          </div>
+          <div onClick={() => this.onDelete(_id)}>
+            <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
+          </div>
+        </IconsWrapper>
+      </Record>
+      )
+    })
+  }
+
   render() {
     const { isEditMealShowing } = this.state
     const dietBroken = this.state.totalCalories > this.state.expectedCalories
@@ -126,7 +278,7 @@ class Logs extends Component {
             <HeaderDecoration>Meals with Calories</HeaderDecoration>
             <CaloriesInfo>
               <div
-                style={{ display: 'flex', maxWidth: '60px', lineHeight: 1.5, marginTop: '20px' }}
+                style={{ display: 'flex', maxWidth: '60px', lineHeight: 1.5, marginTop: '20px', marginRight: '10px' }}
               >
                 Expected Calories:
               </div>
@@ -143,7 +295,7 @@ class Logs extends Component {
               )}
 
               <div style={{ display: 'flex', marginTop: 15, fontSize: 16 }}>
-                Today's calories :{' '}
+                Total calories :{' '}
                 <div
                   style={{
                     color: dietBroken ? 'red' : 'rgb(100, 196, 123)',
@@ -158,44 +310,37 @@ class Logs extends Component {
               </div>
             </CaloriesInfo>
             <RecordsHeader style={{ margin: 'auto', marginTop: '20px' }}>Filter</RecordsHeader>
-            <div
-              style={{
-                maxWidth: 600,
-                display: 'flex',
-                flex: 1,
-                flexDirection: 'column',
-                flexWrap: 'wrap',
-                margin: 'auto',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
+            <FilterWrapper
             >
               <div
                 style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
               >
-                <DatePicker date={this.state.dateFrom} headerText="Date From" marginRight />
-                <DatePicker date={this.state.dateTo} headerText="Date To" />
+                <DatePicker date={this.state.dateFrom} onChange={this.onFromDateChange} headerText="Date From" marginRight />
+                <DatePicker date={this.state.dateTo} onChange={this.onToDateChange} headerText="Date To" />
               </div>
               <div
                 style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
               >
-                <TimePicker time={this.state.timeFrom} headerText="Time From" marginRight />
-                <TimePicker time={this.state.timeTo} headerText="Time To" />
+                <TimePicker time={this.state.timeFrom} onChange={this.onFromTimeChange} headerText="Time From" marginRight />
+                <TimePicker time={this.state.timeTo} onChange={this.onToTimeChange} headerText="Time To" />
               </div>
               {this.state.searchLoading ? (
                 <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />
               ) : (
                 <SearchButton onClick={() => this.onSearch()}>Search</SearchButton>
               )}
-            </div>
+            </FilterWrapper>
             <Add id="edit-meal" isEditMealShowing={isEditMealShowing}>
               <InnerWrapper>
                 <AddContainer>
                   <RecordsHeader>{this.state.isAdd ? 'Add' : 'Edit'} Meal</RecordsHeader>
-                  <DatePicker />
-                  <TimePicker />
-                  <Input placeholder="Title" />
-                  <Input type="number" placeholder="Calories" />
+                  <DatePicker date={this.state.addDate} onChange={this.onAddDateChange} />
+                  <TimePicker time={this.state.addTime} onChange={this.onAddTimeChange} />
+                  <Input value={this.state.addTitle} onChange={(e) => this.onAddTitleChange(e)} placeholder="Title" />
+                  <Input min={0} value={this.state.addCalories || ''} onChange={(e) => this.onAddCaloriesChange(e)} type="number" placeholder="Calories" />
+                  <div style={{display: 'flex'}}>
+                  {this.state.saveError === 1 ? <SaveErrorText>{this.state.saveErrorText}</SaveErrorText> : null}
+                  </div>
                   <div
                     style={{
                       marginLeft: 'auto',
@@ -207,7 +352,7 @@ class Logs extends Component {
                     <div onClick={this.editCloseHandler} style={{ cursor: 'pointer' }}>
                       Cancel
                     </div>
-                    <Button>Save</Button>
+                    <Button onClick={() => this.onSave()}>Save</Button>
                   </div>
                 </AddContainer>
               </InnerWrapper>
@@ -216,78 +361,7 @@ class Logs extends Component {
               <AddRecordButton onClick={() => this.editOpenHandler(true)}>Add New</AddRecordButton>
               <Records>
                 <RecordsHeader>Records</RecordsHeader>
-                <Record>
-                  <div style={{ flex: 1 }}>12.13</div>
-                  <div style={{ flex: 1 }}>18: 10</div> <div style={{ flex: 1 }}>Name</div>
-                  <IconsWrapper style={{ flex: 0.2 }}>
-                    <div onClick={() => this.editOpenHandler(false)}>
-                      <EditIcon
-                        width={13}
-                        height={13}
-                        color="gray"
-                        styles={{ cursor: 'pointer' }}
-                      />
-                    </div>
-                    <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-                  </IconsWrapper>
-                </Record>
-                <Record>
-                  <div style={{ flex: 1 }}>12.13</div>
-                  <div style={{ flex: 1 }}>18 : 10</div> <div style={{ flex: 1 }}>Name</div>
-                  <IconsWrapper style={{ flex: 0.2 }}>
-                    <EditIcon width={13} height={13} color="gray" styles={{ cursor: 'pointer' }} />
-                    <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-                  </IconsWrapper>
-                </Record>
-                <Record>
-                  <div style={{ flex: 1 }}>12.13</div>
-                  <div style={{ flex: 1 }}>18: 10</div> <div style={{ flex: 1 }}>Name</div>
-                  <IconsWrapper style={{ flex: 0.2 }}>
-                    <EditIcon width={13} height={13} color="gray" styles={{ cursor: 'pointer' }} />
-                    <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-                  </IconsWrapper>
-                </Record>
-                <Record>
-                  <div style={{ flex: 1, backgroundColor: 'white' }}>12.13</div>
-                  <div style={{ flex: 1, backgroundColor: 'white' }}>18: 10</div>{' '}
-                  <div
-                    style={{
-                      flex: 1,
-                      backgroundColor: 'white'
-                    }}
-                  >
-                    <div
-                      style={{
-                        textOverflow: 'ellipsis',
-                        width: 120,
-                        paddingRight: 15,
-                        overflow: 'hidden'
-                      }}
-                    >
-                      jiofdfdsafdsagfdgsdfgdfsjok
-                    </div>
-                  </div>
-                  <IconsWrapper style={{ flex: 0.2 }}>
-                    <EditIcon width={13} height={13} color="gray" styles={{ cursor: 'pointer' }} />
-                    <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-                  </IconsWrapper>
-                </Record>
-                <Record>
-                  <div style={{ flex: 1 }}>12.13</div>
-                  <div style={{ flex: 1 }}>18: 10</div> <div style={{ flex: 1 }}>Name</div>
-                  <IconsWrapper style={{ flex: 0.2 }}>
-                    <EditIcon width={13} height={13} color="gray" styles={{ cursor: 'pointer' }} />
-                    <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-                  </IconsWrapper>
-                </Record>
-                <Record>
-                  <div style={{ flex: 1 }}>12.13</div>
-                  <div style={{ flex: 1 }}>18: 10</div> <div style={{ flex: 1 }}>Name</div>
-                  <IconsWrapper style={{ flex: 0.2 }}>
-                    <EditIcon width={13} height={13} color="gray" styles={{ cursor: 'pointer' }} />
-                    <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-                  </IconsWrapper>
-                </Record>
+                    {this.renderRecords()}
               </Records>
             </InnerWrapper>
           </Wrapper>

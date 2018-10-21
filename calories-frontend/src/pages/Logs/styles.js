@@ -15,6 +15,19 @@ export const Header = styled.div`
   align-items: center;
 `
 
+export const FilterWrapper = styled.div`
+max-width: 600px;
+display: flex;
+flex:1;
+flex-wrap: wrap;
+margin: auto;
+justify-content: center;
+align-items: center;
+${tablet} {
+  flex-direction: column;
+}
+`
+
 export const HeaderDecoration = styled.div`
   height: 115px;
   width: 100%;
@@ -56,7 +69,7 @@ export const Button = styled.div`
   padding: 5px 20px;
   margin-top: ${props => (props.logout ? '0px' : '20px')};
   color: white;
-  font-size: 18px;
+  font-size: ${props => (props.logout ? '16px' : '16px')};
   display: flex;
   box-shadow: ${colors.primaryBoxShadow};
   font-weight: medium;
