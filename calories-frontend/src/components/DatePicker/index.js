@@ -45,7 +45,7 @@ function DatePickers(props) {
       <TextField
         id="date"
         type="date"
-        defaultValue="2018-05-24"
+        defaultValue={props.date || new Date().toISOString().substr(0, 10)}
         className={classes.textField}
         InputLabelProps={{
           shrink: true

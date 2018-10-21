@@ -66,6 +66,21 @@ export const Button = styled.div`
   border-radius: ${sizes.buttonBorderRadius};
 `
 
+export const SearchButton = styled.div`
+  background-color: ${colors.searchButton};
+  max-width: 100px;
+  padding: 5px 20px;
+  margin-top: ${props => (props.logout ? '0px' : '20px')};
+  color: white;
+  font-size: 16px;
+  display: flex;
+  box-shadow: ${colors.primaryBoxShadow};
+  font-weight: medium;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: ${sizes.buttonBorderRadius};
+`
+
 export const UpdateButton = styled.div`
   background-color: ${colors.thirdButton};
   max-width: 100px;

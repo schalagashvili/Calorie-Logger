@@ -2,6 +2,7 @@ const colors = {
   primaryBackground: 'linear-gradient(146deg, #cf007a, #eaae33)',
   primaryButton: 'rgb(100, 196, 123)',
   secondaryButton: '#33658A',
+  searchButton: '#da485c',
   thirdButton: '#e79b3a',
   primaryBoxShadow: '0 1px 5px rgba(0, 0, 0, 0.2)',
   lightBlue: 'rgb(127, 165, 208)',

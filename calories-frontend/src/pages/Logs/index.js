@@ -18,6 +18,7 @@ import {
   AddButton,
   ButtonText,
   UpdateButton,
+  SearchButton,
   AddRecordButton
 } from './styles'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
@@ -30,7 +31,22 @@ import { AuthConsumer } from '../../AuthContext'
 import config from '../../config'
 
 class Logs extends Component {
-  state = { isEditMealShowing: false, expectedCalories: 0, totalCalories: 0, updateLoading: false }
+  constructor(props) {
+    super(props)
+    const today = new Date().toISOString().substr(0, 10)
+    this.state = {
+      isEditMealShowing: false,
+      expectedCalories: 0,
+      totalCalories: 0,
+      updateLoading: false,
+      searchLoading: false,
+      mealLogs: [],
+      dateFrom: today,
+      dateTo: today,
+      timeFrom: '00:00',
+      timeTo: new Date().toTimeString().substr(0, 5)
+    }
+  }
 
   componentDidMount() {
     const token = this.props.token
@@ -42,16 +58,28 @@ class Logs extends Component {
       .then(response => {
         this.setState({ expectedCalories: response.data.user.expectedCalories || 0 })
       })
+    axios
+      .get(`${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`, {
+        headers: { authorization: token }
+      })
+      .then(response => {
+        console.log(response.data.logs)
+        this.setState({ mealLogs: response.data.logs || [] })
+      })
   }
 
-  editOpenHandler = () => {
+  onSearch() {
+    this.setState({ searchLoading: true })
+  }
+
+  editOpenHandler = isAdd => {
     const { isEditMealShowing } = this.state
 
     if (!isEditMealShowing) {
       TweenLite.to('#edit-meal', 0.4, { height: '365px', borderBottom: '1px solid #dce0e0' })
     }
 
-    this.setState({ isEditMealShowing: true })
+    this.setState({ isEditMealShowing: true, isAdd })
   }
 
   editCloseHandler = () => {
@@ -135,33 +163,39 @@ class Logs extends Component {
                 maxWidth: 600,
                 display: 'flex',
                 flex: 1,
+                flexDirection: 'column',
                 flexWrap: 'wrap',
                 margin: 'auto',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                alignItems: 'center'
               }}
             >
               <div
                 style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
               >
-                <DatePicker headerText="Date From" marginRight />
-                <DatePicker headerText="Date To" />
+                <DatePicker date={this.state.dateFrom} headerText="Date From" marginRight />
+                <DatePicker date={this.state.dateTo} headerText="Date To" />
               </div>
               <div
                 style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
               >
-                <TimePicker headerText="Time From" marginRight />
-                <TimePicker headerText="Time To" />
+                <TimePicker time={this.state.timeFrom} headerText="Time From" marginRight />
+                <TimePicker time={this.state.timeTo} headerText="Time To" />
               </div>
-              {/* <Button>Search</Button> */}
+              {this.state.searchLoading ? (
+                <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />
+              ) : (
+                <SearchButton onClick={() => this.onSearch()}>Search</SearchButton>
+              )}
             </div>
             <Add id="edit-meal" isEditMealShowing={isEditMealShowing}>
               <InnerWrapper>
                 <AddContainer>
-                  <RecordsHeader>Edit Meal</RecordsHeader>
+                  <RecordsHeader>{this.state.isAdd ? 'Add' : 'Edit'} Meal</RecordsHeader>
                   <DatePicker />
                   <TimePicker />
-                  <Input placeholder="Text" />
-                  <Input placeholder="Calories" />
+                  <Input placeholder="Title" />
+                  <Input type="number" placeholder="Calories" />
                   <div
                     style={{
                       marginLeft: 'auto',
@@ -171,7 +205,7 @@ class Logs extends Component {
                     }}
                   >
                     <div onClick={this.editCloseHandler} style={{ cursor: 'pointer' }}>
-                      Close
+                      Cancel
                     </div>
                     <Button>Save</Button>
                   </div>
@@ -179,14 +213,14 @@ class Logs extends Component {
               </InnerWrapper>
             </Add>
             <InnerWrapper>
-              <AddRecordButton onClick={this.editOpenHandler}>Add New</AddRecordButton>
+              <AddRecordButton onClick={() => this.editOpenHandler(true)}>Add New</AddRecordButton>
               <Records>
                 <RecordsHeader>Records</RecordsHeader>
                 <Record>
                   <div style={{ flex: 1 }}>12.13</div>
                   <div style={{ flex: 1 }}>18: 10</div> <div style={{ flex: 1 }}>Name</div>
                   <IconsWrapper style={{ flex: 0.2 }}>
-                    <div onClick={this.editOpenHandler}>
+                    <div onClick={() => this.editOpenHandler(false)}>
                       <EditIcon
                         width={13}
                         height={13}
