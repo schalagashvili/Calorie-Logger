@@ -32,7 +32,16 @@ import { validateEmail } from '../../utility'
 import { AuthConsumer } from '../../AuthContext'
 
 class Home extends Component {
-  state = { isEditUserShowing: false, isAdd: true, addEmail: null, addPassword: null, addRole: 'regular', viewEmail: null, viewRole: null, viewId: null }
+  state = {
+    isEditUserShowing: false,
+    isAdd: true,
+    addEmail: null,
+    addPassword: null,
+    addRole: 'regular',
+    viewEmail: null,
+    viewRole: null,
+    viewId: null
+  }
 
   onAddNewUser() {
     const { addEmail, addPassword, addRole } = this.state
@@ -44,15 +53,24 @@ class Home extends Component {
         email: addEmail,
         password: addPassword,
         role: addRole
-    }}).then((response) => {
-      const _id = response.data._id
-      let users = this.state.users
-      users.push({_id, email: addEmail, role: addRole})
-      this.setState({users, addError: null, addEmail: null, addPassword: null, addRole: 'regular'})
-      this.addUserCloseHandler()
-    }).catch((err) => {
-      this.setState({addError: err.response.data.error})
+      }
     })
+      .then(response => {
+        const _id = response.data._id
+        let users = this.state.users
+        users.push({ _id, email: addEmail, role: addRole })
+        this.setState({
+          users,
+          addError: null,
+          addEmail: null,
+          addPassword: null,
+          addRole: 'regular'
+        })
+        this.addUserCloseHandler()
+      })
+      .catch(err => {
+        this.setState({ addError: err.response.data.error })
+      })
   }
 
   onEditUser() {
@@ -63,10 +81,11 @@ class Home extends Component {
       headers: { authorization: this.props.token },
       data: {
         role: viewRole
-    }}).then((response) => {
-      const targetIndex = users.findIndex((user) => user._id === viewId)
-      users[targetIndex] = {_id: viewId, email: viewEmail, role: viewRole}
-      this.setState({users, viewId: null, viewEmail: '', viewRole: 'regular'})
+      }
+    }).then(response => {
+      const targetIndex = users.findIndex(user => user._id === viewId)
+      users[targetIndex] = { _id: viewId, email: viewEmail, role: viewRole }
+      this.setState({ users, viewId: null, viewEmail: '', viewRole: 'regular' })
       this.editCloseHandler()
     })
   }
@@ -74,15 +93,15 @@ class Home extends Component {
   componentDidMount() {
     const { token, role } = this.props
     if (role !== 'admin' && role !== 'manager') {
-        history.push('/logs')
+      history.push('/logs')
     } else {
       axios
-      .get(`${config.apiUrl}/getAllUsers`, {
-        headers: { authorization: token }
-      })
-      .then(response => {
-        this.setState({ users: response.data.users || [] })
-      })
+        .get(`${config.apiUrl}/getAllUsers`, {
+          headers: { authorization: token }
+        })
+        .then(response => {
+          this.setState({ users: response.data.users || [] })
+        })
     }
   }
 
@@ -159,36 +178,34 @@ class Home extends Component {
 
   renderUsers(originalEmail) {
     const users = this.state.users || []
-    return users.map((user) => {
-      let { email, role, _id} = user
+    return users.map(user => {
+      let { email, role, _id } = user
       if (email === originalEmail) return null
+      if (this.props.role === 'manager' && role === 'admin') return null
       return (
         <Record key={_id}>
-        <div onClick={() => this.onUserClick(_id)} style={{ flex: 1, cursor: 'pointer' }}>{email}</div>
-        <div style={{ flex: 1 }}>{role}</div>
-        <IconsWrapper style={{ flex: 0.2 }}>
-          <div onClick={() => this.editOpenHandler(false, _id, email, role)}>
-            <EditIcon
-              width={13}
-              height={13}
-              color="gray"
-              styles={{ cursor: 'pointer' }}
-            />
+          <div onClick={() => this.onUserClick(_id)} style={{ flex: 1, cursor: 'pointer' }}>
+            {email}
           </div>
-          <div onClick={() => this.onDelete(_id)}>
-            <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-          </div>
-        </IconsWrapper>
-      </Record>
+          <div style={{ flex: 1 }}>{role}</div>
+          <IconsWrapper style={{ flex: 0.2 }}>
+            <div onClick={() => this.editOpenHandler(false, _id, email, role)}>
+              <EditIcon width={13} height={13} color="gray" styles={{ cursor: 'pointer' }} />
+            </div>
+            <div onClick={() => this.onDelete(_id)}>
+              <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
+            </div>
+          </IconsWrapper>
+        </Record>
       )
     })
   }
 
   onRoleChange(e, isView) {
     if (isView) {
-      return this.setState({viewRole: e.target.value})
+      return this.setState({ viewRole: e.target.value })
     }
-    this.setState({addRole: e.target.value})
+    this.setState({ addRole: e.target.value })
   }
 
   onDelete(id) {
@@ -198,8 +215,8 @@ class Home extends Component {
       headers: { authorization: this.props.token }
     }).then(() => {
       let users = this.state.users
-      users = users.filter((user) => user._id !== id)
-      this.setState({users})
+      users = users.filter(user => user._id !== id)
+      this.setState({ users })
     })
   }
 
@@ -208,104 +225,128 @@ class Home extends Component {
 
     return (
       <AuthConsumer>
-      {({ isAuth, login, logout, email }) => (
-      <Wrapper>
-        <BaseHeader role={this.props.role} onLogout={logout} />
-        <HeaderDecoration>Users Management</HeaderDecoration>
-        <Add id="add-user" isEditUserShowing={isEditUserShowing}>
-          <InnerWrapper>
-            <AddContainer>
-              <RecordsHeader>Add User</RecordsHeader>
-              <Input onChange={(e) => this.onEmailChange(e)} placeholder="Email" type="email" />
-              {this.state.emailError === 1 ? <ErrorText>{this.state.emailErrorText}</ErrorText> : null}
-              <Input onChange={(e) => this.onPasswordChange(e)} placeholder="Password" type="password" />
-              {this.state.passwordError === 1 ? <ErrorText>{this.state.passwordErrorText}</ErrorText> : null}
-              {
-                this.props.role === 'admin' ? (
-                  <div style={{width: '50%', marginTop: '20px'}}>
-                    <span>Role:   </span>
-                    <select value={this.state.addRole || 'regular'} onChange={(e) => this.onRoleChange(e)}>
-                      <option value="regular">Regular</option>
-                      <option value="manager">Manager</option>
-                      <option value="admin">Admin</option>
-                    </select>
+        {({ isAuth, login, logout, email }) => (
+          <Wrapper>
+            <BaseHeader role={this.props.role} onLogout={logout} />
+            <HeaderDecoration>Users Management</HeaderDecoration>
+            <Add id="add-user" isEditUserShowing={isEditUserShowing}>
+              <InnerWrapper>
+                <AddContainer>
+                  <RecordsHeader>Add User</RecordsHeader>
+                  <Input onChange={e => this.onEmailChange(e)} placeholder="Email" type="email" />
+                  {this.state.emailError === 1 ? (
+                    <ErrorText>{this.state.emailErrorText}</ErrorText>
+                  ) : null}
+                  <Input
+                    onChange={e => this.onPasswordChange(e)}
+                    placeholder="Password"
+                    type="password"
+                  />
+                  {this.state.passwordError === 1 ? (
+                    <ErrorText>{this.state.passwordErrorText}</ErrorText>
+                  ) : null}
+                  {this.props.role === 'admin' ? (
+                    <div style={{ width: '50%', marginTop: '20px' }}>
+                      <span>Role: </span>
+                      <select
+                        value={this.state.addRole || 'regular'}
+                        onChange={e => this.onRoleChange(e)}
+                      >
+                        <option value="regular">Regular</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div style={{ width: '50%', marginTop: '20px' }}>
+                      <span>Role: </span>
+                      <select
+                        value={this.state.addRole || 'regular'}
+                        onChange={e => this.onRoleChange(e)}
+                      >
+                        <option value="regular">Regular</option>
+                        <option value="manager">Manager</option>
+                      </select>
+                    </div>
+                  )}
+                  {this.state.addError != null ? (
+                    <ErrorText>{this.state.addError}</ErrorText>
+                  ) : null}
+                  <div
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      width: 140
+                    }}
+                  >
+                    <div onClick={this.addUserCloseHandler} style={{ cursor: 'pointer' }}>
+                      Close
+                    </div>
+                    <Button onClick={() => this.onAddNewUser()}>Save</Button>
                   </div>
-                ) : (
-                  <div style={{width: '50%', marginTop: '20px'}}>
-                  <span>Role:   </span>
-                  <select value={this.state.addRole || 'regular'} onChange={(e) => this.onRoleChange(e)}>
-                    <option value="regular">Regular</option>
-                    <option value="manager">Manager</option>
-                  </select>
-                </div>
-                )
-              }
-              {this.state.addError != null ? <ErrorText>{this.state.addError}</ErrorText> : null}
-              <div
-                style={{
-                  marginLeft: 'auto',
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  width: 140
-                }}
-              >
-                <div onClick={this.addUserCloseHandler} style={{ cursor: 'pointer' }}>
-                  Close
-                </div>
-                <Button onClick={() => this.onAddNewUser()}>Save</Button>
-              </div>
-            </AddContainer>
-          </InnerWrapper>
-        </Add>
-        <Add id="edit-user" isEditUserShowing={isEditUserShowing}>
-          <InnerWrapper>
-            <AddContainer>
-              <RecordsHeader>Edit User</RecordsHeader>
-              <Input disabled value={this.state.viewEmail || ''} placeholder="Email" type="email" />
-              {
-                this.props.role === 'admin' ? (
-                  <div style={{width: '50%', marginTop: '20px'}}>
-                    <span>Role:   </span>
-                    <select value={this.state.viewRole || 'regular'} onChange={(e) => this.onRoleChange(e, true)}>
-                      <option value="regular">Regular</option>
-                      <option value="manager">Manager</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                </AddContainer>
+              </InnerWrapper>
+            </Add>
+            <Add id="edit-user" isEditUserShowing={isEditUserShowing}>
+              <InnerWrapper>
+                <AddContainer>
+                  <RecordsHeader>Edit User</RecordsHeader>
+                  <Input
+                    disabled
+                    value={this.state.viewEmail || ''}
+                    placeholder="Email"
+                    type="email"
+                  />
+                  {this.props.role === 'admin' ? (
+                    <div style={{ width: '50%', marginTop: '20px' }}>
+                      <span>Role: </span>
+                      <select
+                        value={this.state.viewRole || 'regular'}
+                        onChange={e => this.onRoleChange(e, true)}
+                      >
+                        <option value="regular">Regular</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div style={{ width: '50%', marginTop: '20px' }}>
+                      <span>Role: </span>
+                      <select
+                        value={this.state.viewRole || 'regular'}
+                        onChange={e => this.onRoleChange(e, true)}
+                      >
+                        <option value="regular">Regular</option>
+                        <option value="manager">Manager</option>
+                      </select>
+                    </div>
+                  )}
+                  <div
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      width: 140
+                    }}
+                  >
+                    <div onClick={this.editCloseHandler} style={{ cursor: 'pointer' }}>
+                      Close
+                    </div>
+                    <Button onClick={() => this.onEditUser()}>Save</Button>
                   </div>
-                ) : (
-                  <div style={{width: '50%', marginTop: '20px'}}>
-                  <span>Role:   </span>
-                  <select value={this.state.viewRole || 'regular'} onChange={(e) => this.onRoleChange(e, true)}>
-                    <option value="regular">Regular</option>
-                    <option value="manager">Manager</option>
-                  </select>
-                </div>
-                )
-              }
-              <div
-                style={{
-                  marginLeft: 'auto',
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  width: 140
-                }}
-              >
-                <div onClick={this.editCloseHandler} style={{ cursor: 'pointer' }}>
-                  Close
-                </div>
-                <Button onClick={() => this.onEditUser()}>Save</Button>
-              </div>
-            </AddContainer>
-          </InnerWrapper>
-        </Add>
-        <InnerWrapper>
-          <AddRecordButton onClick={this.addUserOpenHandler}>Add New</AddRecordButton>
-          <Records>
-            <RecordsHeader>Users</RecordsHeader>
-            {this.renderUsers(email)}
-          </Records>
-        </InnerWrapper>
-      </Wrapper>)}
+                </AddContainer>
+              </InnerWrapper>
+            </Add>
+            <InnerWrapper>
+              <AddRecordButton onClick={this.addUserOpenHandler}>Add New</AddRecordButton>
+              <Records>
+                <RecordsHeader>Users</RecordsHeader>
+                {this.renderUsers(email)}
+              </Records>
+            </InnerWrapper>
+          </Wrapper>
+        )}
       </AuthConsumer>
     )
   }

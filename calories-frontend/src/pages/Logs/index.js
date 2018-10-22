@@ -113,7 +113,7 @@ class Logs extends Component {
     if (isAdd) {
       const addDate = new Date().toISOString().substr(0, 10)
       const addTime = new Date().toTimeString().substr(0, 5)
-      this.setState({ isEditMealShowing: true, isAdd, addDate, addTime })
+      this.setState({ isEditMealShowing: true, isAdd, addDate, addTime, addCalories: '', addTitle: '' })
     } else {
       const editLog = this.state.mealLogs.filter((log) => log._id === id)[0]
       const addDate = new Date(editLog.date).toISOString().substr(0, 10)
