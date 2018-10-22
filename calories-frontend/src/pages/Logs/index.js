@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Spinner from 'react-spinkit'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import {
   HeaderDecoration,
   Wrapper,
@@ -40,13 +40,14 @@ class Logs extends Component {
       updateLoading: false,
       searchLoading: false,
       mealLogs: [],
-      dateFrom: today,
-      dateTo: today,
-      timeFrom: '00:00',
+      fromDate: today,
+      toDate: today,
       addTitle: '',
       addCalories: '',
-      addDate: '',
-      timeTo: new Date().toTimeString().substr(0, 5)
+      addDate: new Date().toISOString().substr(0, 10),
+      addTime: new Date().toTimeString().substr(0, 5), 
+      fromTime: "00:00",
+      toTime: new Date().toTimeString().substr(0, 5)
     }
     this.onFromDateChange = this.onFromDateChange.bind(this)
     this.onToDateChange = this.onToDateChange.bind(this)
@@ -59,17 +60,20 @@ class Logs extends Component {
   componentDidMount() {
     const token = this.props.token
     const userId = this.props.match.params.userId
+    const { fromDate, toDate, fromTime, toTime } = this.state
     axios
       .get(`${config.apiUrl}/getUser/${userId != null ? userId : ''}`, {
         headers: { authorization: token }
       })
       .then(response => {
-        this.setState({ expectedCalories: response.data.user.expectedCalories || 0 })
+        this.setState({ expectedCalories: response.data.user.expectedCalories || 0, email: response.data.user.email})
       })
-    axios
-      .get(`${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`, {
-        headers: { authorization: token }
-      })
+    axios({
+      method: 'post',
+      url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
+      headers: { authorization: token },
+      data: { fromDate, toDate, fromTime, toTime }  
+    })
       .then(response => {
         let totalCalories = 0
         const mealLogs = response.data.logs
@@ -81,7 +85,24 @@ class Logs extends Component {
   }
 
   onSearch() {
+    const token = this.props.token
+    const userId = this.props.match.params.userId
+    const { fromDate, toDate, fromTime, toTime } = this.state
     this.setState({ searchLoading: true })
+    axios({
+      method: 'post',
+      url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
+      headers: { authorization: token },
+      data: { fromDate, toDate, fromTime, toTime }  
+    })
+      .then(response => {
+        let totalCalories = 0
+        const mealLogs = response.data.logs
+        if (mealLogs != null) {
+          mealLogs.map((log) => totalCalories += log.calories)
+        }
+        this.setState({ mealLogs: mealLogs != null ? mealLogs.reverse() : [], totalCalories, searchLoading: false })
+      })
   }
 
   editOpenHandler = (isAdd, id) => {
@@ -123,7 +144,6 @@ class Logs extends Component {
     const { expectedCalories } = this.state
     const token = this.props.token
     const userId = this.props.match.params.userId
-    console.log(token)
     axios({
       method: 'post',
       url: `${config.apiUrl}/editUser/${userId != null ? userId : ''}`,
@@ -160,7 +180,7 @@ class Logs extends Component {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill in all fields'})
     }
     this.setState({addDate: '' ,addTime: '', addTitle: '', addCalories: ''})
-    const datetime = moment(`${addDate} ${addTime}`, 'YYYY-MM-DD hh:mm').toDate()
+    const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
     const userId = this.props.match.params.userId
     if (isAdd) {
       axios({
@@ -222,7 +242,6 @@ class Logs extends Component {
   }
 
   onDelete(id) {
-    console.log('deleting: ', id)
     const userId = this.props.match.params.userId
     axios({
       method: 'post',
@@ -243,10 +262,11 @@ class Logs extends Component {
     let { mealLogs } = this.state
     return mealLogs.map((log) => {
       let { date, calories, title, _id} = log
-      date = moment(date).format('YYYY-MM-DD hh:mm')
+      date = moment.tz(date, 'Asia/Tbilisi').format('YYYY-MM-DD HH:mm')
       return (
         <Record key={_id}>
-        <div style={{ flex: 1 }}>{date}</div>
+        <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format("MM/DD/YYYY")}</div>
+        <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format("HH:mm")}</div>
         <div style={{ flex: 1 }}>{title}</div>
         <div style={{ flex: 1, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>{calories} cal</div>
         <IconsWrapper style={{ flex: 0.2 }}>
@@ -274,8 +294,8 @@ class Logs extends Component {
       <AuthConsumer>
         {({ isAuth, login, role, logout }) => (
           <Wrapper>
-            <BaseHeader onLogout={logout} />
-            <HeaderDecoration>Meals with Calories</HeaderDecoration>
+            <BaseHeader role={this.props.role} onLogout={logout} />
+            <HeaderDecoration>Meals with Calories {this.props.match.params.userId ? `for ${this.state.email}` : ''}</HeaderDecoration>
             <CaloriesInfo>
               <div
                 style={{ display: 'flex', maxWidth: '60px', lineHeight: 1.5, marginTop: '20px', marginRight: '10px' }}
@@ -315,14 +335,14 @@ class Logs extends Component {
               <div
                 style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
               >
-                <DatePicker date={this.state.dateFrom} onChange={this.onFromDateChange} headerText="Date From" marginRight />
-                <DatePicker date={this.state.dateTo} onChange={this.onToDateChange} headerText="Date To" />
+                <DatePicker date={this.state.fromDate} onChange={this.onFromDateChange} headerText="Date From" marginRight />
+                <DatePicker date={this.state.toDate} onChange={this.onToDateChange} headerText="Date To" />
               </div>
               <div
                 style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
               >
-                <TimePicker time={this.state.timeFrom} onChange={this.onFromTimeChange} headerText="Time From" marginRight />
-                <TimePicker time={this.state.timeTo} onChange={this.onToTimeChange} headerText="Time To" />
+                <TimePicker time={this.state.fromTime} onChange={this.onFromTimeChange} headerText="Time From" marginRight />
+                <TimePicker time={this.state.toTime} onChange={this.onToTimeChange} headerText="Time To" />
               </div>
               {this.state.searchLoading ? (
                 <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />

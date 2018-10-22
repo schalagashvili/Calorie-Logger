@@ -1,6 +1,7 @@
 import React from 'react'
 import logo from '../../assets/logos/brand-logo.png'
 import { Header, Button } from '../../pages/Logs/styles'
+import history from '../../history'
 
 export default class BaseHeader extends React.Component {
   onLogout() {
@@ -10,7 +11,9 @@ export default class BaseHeader extends React.Component {
   render() {
     return (
       <Header>
-        <div>
+        <div onClick={() => {
+          this.props.role == 'admin' || this.props.role == 'manager' ? history.push('/users') : history.push('logs')
+        }}>
           <img src={logo} alt="logo" style={{ width: 180, cursor: 'pointer' }} />
         </div>{' '}
         <Button onClick={() => this.onLogout()} logout>

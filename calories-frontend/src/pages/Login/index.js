@@ -57,10 +57,10 @@ class Login extends Component {
         outerThis.setState({ loading: false })
         const token = response.data.token
         const role = response.data.role
-        login(role, token)
+        const email = response.data.email
+        login(role, token, email)
       })
       .catch(function(error) {
-        console.log(error.response)
         outerThis.setState({
           loading: false,
           submitError: 1,

@@ -4,7 +4,7 @@ import history from './history'
 const AuthContext = React.createContext()
 
 class AuthProvider extends React.Component {
-  state = { isAuth: false, role: null, token: null }
+  state = { isAuth: false, role: null, token: null, email: null }
 
   constructor() {
     super()
@@ -12,17 +12,20 @@ class AuthProvider extends React.Component {
     this.logout = this.logout.bind(this)
     const token = localStorage.getItem('token')
     const role = localStorage.getItem('role')
+    const email = localStorage.getItem('email')
     this.state = {
       token,
       role,
+      email,
       isAuth: token != null ? true : false
     }
   }
 
-  login(role, token) {
+  login(role, token, email) {
     localStorage.setItem('token', token)
     localStorage.setItem('role', role)
-    this.setState({ role, token, isAuth: true }, () => {
+    localStorage.setItem('email', email)
+    this.setState({ role, token, isAuth: true, email }, () => {
       if (role === 'regular') {
         history.push('/logs')
       } else if (role === 'admin' || role === 'manager') {
@@ -34,7 +37,8 @@ class AuthProvider extends React.Component {
   logout() {
     localStorage.removeItem('token')
     localStorage.removeItem('role')
-    this.setState({ isAuth: false, role: null, token: null })
+    localStorage.removeItem('email')
+    this.setState({ isAuth: false, role: null, token: null, email: null })
   }
 
   render() {
@@ -44,6 +48,7 @@ class AuthProvider extends React.Component {
           isAuth: this.state.isAuth,
           role: this.state.role,
           token: this.state.token,
+          email: this.state.email,
           login: this.login,
           logout: this.logout
         }}

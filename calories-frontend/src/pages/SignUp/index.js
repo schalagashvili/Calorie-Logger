@@ -73,7 +73,8 @@ class SignUp extends Component {
         outerThis.setState({ loading: false })
         const token = response.data.token
         const role = response.data.role
-        login(role, token)
+        const email = response.data.email
+        login(role, token, email)
       })
       .catch(function(error) {
         outerThis.setState({

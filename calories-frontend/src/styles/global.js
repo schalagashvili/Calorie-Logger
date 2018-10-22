@@ -14,7 +14,7 @@ injectGlobal`
       margin: 0;
       padding: 0;
       font-size: ${fonts.sizes.normal};
-  background-color: #fbfbfb;
+  background-color: #fff;
       text-decoration: none;
   }
 

@@ -1,6 +1,7 @@
 import jwt from 'jwt-simple';
 // import secret string used for tokenization
 import secret from '../secret';
+const UserSchema = require('../models').userSchema;
 
 // generates tokens for users
 exports.tokenForUser = function(user) {
@@ -9,6 +10,7 @@ exports.tokenForUser = function(user) {
 };
 
 exports.validateEmail = function(email) {
+	// eslint-disable-next-line
 	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return re.test(email);
 };
@@ -23,9 +25,9 @@ exports.addMealLog = function(user, req, res) {
 	};
 	logs.push(log);
 	user.mealLog = logs;
-	user.save((err, newUser) => {
+	UserSchema.findOneAndUpdate({_id: user._id}, user, (err) => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify({_id: newUser.mealLog[newUser.mealLog.length - 1]._id}));
+		return res.status(200).send(JSON.stringify({_id: user.mealLog[user.mealLog.length - 1]._id}));
 	});
 };
 
@@ -36,9 +38,9 @@ exports.removeMealLog = function(user, req, res) {
 		return doc._id != logId;
 	});
 	user.mealLog = logs;
-	user.save((err, newUser) => {
+	UserSchema.findOneAndUpdate({_id: user._id}, user, (err) => {
 		if (err) return res.status(500).send();
-		return res.status(200).send(JSON.stringify(newUser));
+		return res.status(200).send(JSON.stringify(user));
 	});
 };
 
@@ -56,7 +58,7 @@ exports.editMealLog = function(user, req, res) {
 	editLog.calories = calories || editLog.calories;
 	logs[logIndex] = editLog;
 	user.mealLog = logs;
-	user.save(err => {
+	UserSchema.findOneAndUpdate({_id: user._id}, user, (err) => {
 		if (err) return res.status(500).send();
 		return res.status(200).send(JSON.stringify(user));
 	});
@@ -78,7 +80,7 @@ exports.editUser = function(user, req, res, isAdmin) {
 		user.role = role || user.role;
 	}
 	user.expectedCalories = expectedCalories || user.expectedCalories;
-	user.save(err => {
+	UserSchema.findOneAndUpdate({_id: user._id}, user, (err) => {
 		if (err) return res.status(500).send();
 		return res.status(200).send(JSON.stringify(user));
 	});

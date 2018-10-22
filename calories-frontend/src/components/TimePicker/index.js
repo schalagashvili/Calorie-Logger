@@ -35,7 +35,7 @@ function TimePickers(props) {
       <TextField
         id="time"
         type="time"
-        value={props.time || new Date().toTimeString().substr(0, 5)}
+        value={props.time}
         onChange={(e) => onChange(e)}
         // defaultValue={props.time || new Date().toTimeString().substr(0, 5)}
         className={classes.textField}
