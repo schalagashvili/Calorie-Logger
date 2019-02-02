@@ -16,13 +16,13 @@ export const ErrorText = styled.p`
   color: red;
   font-size: 15px;
   margin-top: 10px;
-  font-family: QuicksandRegular;
+  font-family: KrubRegular;
 `
 
 export const SaveErrorText = styled.span`
   color: red;
   font-size: 12px;
-  font-family: QuicksandRegular;
+  font-family: KrubRegular;
   margin-top: 10px;
 `
 
@@ -50,7 +50,7 @@ export const MailInput = styled.input`
 `
 
 export const Register = styled.div`
-  color: #00b2d6;
+  color: white;
   margin-top: 20px;
   font-weight: bold;
   cursor: pointer;

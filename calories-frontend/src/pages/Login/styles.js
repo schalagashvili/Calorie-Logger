@@ -1,9 +1,12 @@
 import styled from 'styled-components'
 import colors from '../../styles/colors'
 import sizes from '../../styles/sizes'
+import bgImage from '../../assets/images/bgImage.jpg'
+// import Button from '@material-ui/core/Button'
 
 export const Wrapper = styled.div`
-  background: ${colors.primaryBackground};
+  background-image: url(${bgImage});
+  background-size: cover;
   min-height: 100vh;
   height: 100%;
   display: flex;
@@ -13,15 +16,17 @@ export const Wrapper = styled.div`
 
 export const ErrorText = styled.p`
   color: red;
-  font-size: 15px;
+  font-size: 12px;
   margin-top: 10px;
-  font-family: QuicksandRegular;
+  background-color: transparent;
+  font-family: KrubRegular;
 `
 
 export const LoginContainer = styled.div`
   width: 400px;
-  height: 500px;
-  background-color: white;
+  height: 400px;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 0px 238px 14px rgba(5,5,5,1);
   border-radius: ${sizes.borderRadius};
   display: flex;
   flex-direction: column;
@@ -33,21 +38,47 @@ export const MailInput = styled.input`
   width: 300px;
   height: 55px;
   border: 1px solid #dce0e0;
-  border-radius: ${sizes.borderRadius};
-  background-color: white;
+  border-radius: 35px;
   outline: none;
-  padding: 10px 15px;
+  color: white; 
+  padding: 10px 30px;
   font-size: 16px;
-  margin-top: 20px;
+  background-color: transparent;
+  margin-top: 30px;
 `
 
 export const Register = styled.div`
-  color: #00b2d6;
+  color: white;
   margin-top: 20px;
   font-weight: bold;
+  background-color: transparent;
+  letter-spacing: 0.7px;
   cursor: pointer;
 `
 
 export const InputWrapper = styled.div`
   position: relative;
+  background-color: transparent;
 `
+
+
+export const StyledButton = styled.div`
+  background: #FF5A5F;
+  border-radius: 35px;
+  border: 0;
+  color: white;
+  font-size: 16px;
+  height: 48px;
+  text-align: center;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  padding: 0 30px;
+  letter-spacing: 0.7px;
+  box-shadow: 0 3px 5px 2px rgba(255, 105, 135, .1);
+  &:hover {
+    cursor: pointer;
+  }
+`;

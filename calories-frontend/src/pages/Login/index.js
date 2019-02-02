@@ -2,13 +2,32 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import Spinner from 'react-spinkit'
 import { Link, Redirect } from 'react-router-dom'
-import { Wrapper, LoginContainer, MailInput, Register, InputWrapper, ErrorText } from './styles'
+import { Wrapper, LoginContainer, MailInput, Register, InputWrapper, ErrorText, StyledButton } from './styles'
 import logo from '../../assets/logos/brand-logo.png'
-import { Button } from '../../styles/mixins'
 import { EditIcon } from '../../assets/icons'
 import { validateEmail } from '../../utility'
 import { apiUrl } from '../../config'
+import classNames from 'classnames';
+import TextField from '@material-ui/core/TextField';
 import { AuthConsumer } from '../../AuthContext'
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+  dense: {
+    marginTop: 16,
+  },
+  menu: {
+    width: 200,
+  },
+});
 
 class Login extends Component {
   state = {
@@ -53,14 +72,14 @@ class Login extends Component {
         email: this.state.email,
         password: this.state.password
       })
-      .then(function(response) {
+      .then(function (response) {
         outerThis.setState({ loading: false })
         const token = response.data.token
         const role = response.data.role
         const email = response.data.email
         login(role, token, email)
       })
-      .catch(function(error) {
+      .catch(function (error) {
         outerThis.setState({
           loading: false,
           submitError: 1,
@@ -72,8 +91,19 @@ class Login extends Component {
       })
   }
 
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
+  };
+
+
   render() {
     const { emailError, passwordError, submitError } = this.state
+    const { classes } = this.props;
+
+    console.log(classes)
+
     return (
       <AuthConsumer>
         {({ isAuth, login, role }) => {
@@ -87,39 +117,26 @@ class Login extends Component {
           return (
             <Wrapper>
               <LoginContainer>
-                <img src={logo} alt="logo" style={{ width: 200 }} />
-                <InputWrapper>
-                  <MailInput onChange={e => this.onEmailChange(e)} placeholder="E-Mail" />
-                  <EditIcon
-                    width={20}
-                    height={20}
-                    color="gray"
-                    styles={{ position: 'absolute', right: 15, top: 35 }}
-                  />
-                </InputWrapper>
+                {/* <img src={logo} alt="logo" style={{ width: 200 }} /> */}
+
+                <MailInput onChange={e => this.onEmailChange(e)} placeholder="E-Mail" />
+
                 {emailError === 1 ? <ErrorText>{this.state.emailErrorText}</ErrorText> : null}
-                <InputWrapper>
-                  <MailInput
-                    onChange={e => this.onPasswordChange(e)}
-                    type="password"
-                    placeholder="Password"
-                  />
-                  <EditIcon
-                    width={20}
-                    height={20}
-                    color="gray"
-                    styles={{ position: 'absolute', right: 15, top: 35 }}
-                  />
-                </InputWrapper>
+                <MailInput
+                  onChange={e => this.onPasswordChange(e)}
+                  type="password"
+                  placeholder="Password"
+                />
+                 {/* ამას დივი უნდა ჰქონდეს თავისიი!!!! */}
                 {passwordError === 1 ? <ErrorText>{this.state.passwordErrorText}</ErrorText> : null}
                 {submitError === 1 ? <ErrorText>{this.state.submitErrorText}</ErrorText> : null}
-                {this.state.loading ? (
-                  <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />
+                {/* {this.state.loading ? (
+                  <Spinner fadeIn="none" style={{ marginTop: '20px', backgroundColor: 'transparent' }} name="circle" />
                 ) : (
-                  <Button onClick={() => this.onSubmit(login)}>Log In</Button>
-                )}
-                <Link to="/signup">
-                  <Register>Register</Register>
+                  )} */}
+                  <StyledButton onClick={() => this.onSubmit(login)}>Log In</StyledButton>
+                <Link to="/signup" style={{backgroundColor: 'transparent'}}>
+                  <Register>Sign Up</Register>
                 </Link>
               </LoginContainer>
             </Wrapper>
@@ -130,4 +147,4 @@ class Login extends Component {
   }
 }
 
-export default Login
+export default withStyles(styles)(Login);

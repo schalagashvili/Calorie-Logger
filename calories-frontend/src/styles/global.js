@@ -1,15 +1,15 @@
 import { injectGlobal } from 'styled-components'
 import fonts from './fonts'
-import QuicksandRegular from '../assets/fonts/Quicksand-Regular.ttf'
+import KrubRegular from '../assets/fonts/Krub-Regular.ttf'
 
 injectGlobal`
   @font-face {
-    font-family: QuicksandRegular;
-    src: url('${QuicksandRegular}') format('opentype');
+    font-family: KrubRegular;
+    src: url('${KrubRegular}') format('opentype');
   }
 
   * {
-      font-family: QuicksandRegular;
+      font-family: KrubRegular;
       box-sizing: border-box;
       margin: 0;
       padding: 0;

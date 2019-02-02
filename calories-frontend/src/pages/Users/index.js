@@ -258,17 +258,17 @@ class Home extends Component {
                       </select>
                     </div>
                   ) : (
-                    <div style={{ width: '50%', marginTop: '20px' }}>
-                      <span>Role: </span>
-                      <select
-                        value={this.state.addRole || 'regular'}
-                        onChange={e => this.onRoleChange(e)}
-                      >
-                        <option value="regular">Regular</option>
-                        <option value="manager">Manager</option>
-                      </select>
-                    </div>
-                  )}
+                      <div style={{ width: '50%', marginTop: '20px' }}>
+                        <span>Role: </span>
+                        <select
+                          value={this.state.addRole || 'regular'}
+                          onChange={e => this.onRoleChange(e)}
+                        >
+                          <option value="regular">Regular</option>
+                          <option value="manager">Manager</option>
+                        </select>
+                      </div>
+                    )}
                   {this.state.addError != null ? (
                     <ErrorText>{this.state.addError}</ErrorText>
                   ) : null}
@@ -311,17 +311,17 @@ class Home extends Component {
                       </select>
                     </div>
                   ) : (
-                    <div style={{ width: '50%', marginTop: '20px' }}>
-                      <span>Role: </span>
-                      <select
-                        value={this.state.viewRole || 'regular'}
-                        onChange={e => this.onRoleChange(e, true)}
-                      >
-                        <option value="regular">Regular</option>
-                        <option value="manager">Manager</option>
-                      </select>
-                    </div>
-                  )}
+                      <div style={{ width: '50%', marginTop: '20px' }}>
+                        <span>Role: </span>
+                        <select
+                          value={this.state.viewRole || 'regular'}
+                          onChange={e => this.onRoleChange(e, true)}
+                        >
+                          <option value="regular">Regular</option>
+                          <option value="manager">Manager</option>
+                        </select>
+                      </div>
+                    )}
                   <div
                     style={{
                       marginLeft: 'auto',
