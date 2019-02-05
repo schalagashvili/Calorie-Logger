@@ -7,7 +7,7 @@ import {
   Wrapper,
   Add,
   AddContainer,
-  Button,
+  // Button,
   InnerWrapper,
   Record,
   Records,
@@ -21,7 +21,7 @@ import {
 } from './styles'
 import { SaveErrorText } from '../SignUp/styles'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
-import { DatePicker, TimePicker } from '../../components'
+import { DatePicker, TimePicker, Tabs, Button, Table } from '../../components'
 import { Input } from '../../styles/mixins'
 import TweenLite from 'gsap'
 import BaseHeader from '../../components/BaseHeader'
@@ -45,7 +45,7 @@ class Logs extends Component {
       addTitle: '',
       addCalories: '',
       addDate: new Date().toISOString().substr(0, 10),
-      addTime: new Date().toTimeString().substr(0, 5), 
+      addTime: new Date().toTimeString().substr(0, 5),
       fromTime: "00:00",
       toTime: new Date().toTimeString().substr(0, 5)
     }
@@ -66,13 +66,13 @@ class Logs extends Component {
         headers: { authorization: token }
       })
       .then(response => {
-        this.setState({ expectedCalories: response.data.user.expectedCalories || 0, email: response.data.user.email})
+        this.setState({ expectedCalories: response.data.user.expectedCalories || 0, email: response.data.user.email })
       })
     axios({
       method: 'post',
       url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
       headers: { authorization: token },
-      data: { fromDate, toDate, fromTime, toTime }  
+      data: { fromDate, toDate, fromTime, toTime }
     })
       .then(response => {
         let totalCalories = 0
@@ -93,7 +93,7 @@ class Logs extends Component {
       method: 'post',
       url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
       headers: { authorization: token },
-      data: { fromDate, toDate, fromTime, toTime }  
+      data: { fromDate, toDate, fromTime, toTime }
     })
       .then(response => {
         let totalCalories = 0
@@ -155,11 +155,11 @@ class Logs extends Component {
   }
 
   onAddDateChange(e) {
-    this.setState({ addDate: e.target.value})
+    this.setState({ addDate: e.target.value })
   }
 
   onAddTimeChange(e) {
-    this.setState({ addTime: e.target.value})
+    this.setState({ addTime: e.target.value })
   }
 
   onAddTitleChange(e) {
@@ -177,9 +177,9 @@ class Logs extends Component {
   onSave() {
     let { addDate, addTime, addTitle, addCalories, isAdd } = this.state
     if (addTitle == null || addCalories == null) {
-      return this.setState({ saveError: 1, saveErrorText: 'Please fill in all fields'})
+      return this.setState({ saveError: 1, saveErrorText: 'Please fill in all fields' })
     }
-    this.setState({addDate: '' ,addTime: '', addTitle: '', addCalories: ''})
+    this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '' })
     const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
     const userId = this.props.match.params.userId
     if (isAdd) {
@@ -188,18 +188,19 @@ class Logs extends Component {
         url: `${config.apiUrl}/addMealLog/${userId != null ? userId : ''}`,
         headers: { authorization: this.props.token },
         data: {
-        title: addTitle,
-        calories: addCalories,
-        date: datetime
-      }}).then((response) => {
+          title: addTitle,
+          calories: addCalories,
+          date: datetime
+        }
+      }).then((response) => {
         const _id = response.data._id
         let mealLogs = this.state.mealLogs
         let totalCalories = 0
-        mealLogs = insertFunc(mealLogs, 0, {title: addTitle, calories: addCalories, date: datetime, _id})
+        mealLogs = insertFunc(mealLogs, 0, { title: addTitle, calories: addCalories, date: datetime, _id })
         if (mealLogs != null) {
           mealLogs.map((log) => totalCalories += log.calories)
         }
-        this.setState({mealLogs, totalCalories})
+        this.setState({ mealLogs, totalCalories })
       })
     } else {
       axios({
@@ -207,19 +208,20 @@ class Logs extends Component {
         url: `${config.apiUrl}/editMealLog/${this.state.editId}/${userId != null ? userId : ''}`,
         headers: { authorization: this.props.token },
         data: {
-        title: addTitle,
-        calories: addCalories,
-        date: datetime
-      }}).then((response) => {
+          title: addTitle,
+          calories: addCalories,
+          date: datetime
+        }
+      }).then((response) => {
         let mealLogs = this.state.mealLogs
         let totalCalories = 0
         const editedLogIndex = mealLogs.findIndex((log) => log._id === this.state.editId)
-        if (editedLogIndex === -1) {return}
-        mealLogs[editedLogIndex] = { _id: this.state.editId, title: addTitle, calories: addCalories, date: datetime}
+        if (editedLogIndex === -1) { return }
+        mealLogs[editedLogIndex] = { _id: this.state.editId, title: addTitle, calories: addCalories, date: datetime }
         if (mealLogs != null) {
           mealLogs.map((log) => totalCalories += log.calories)
         }
-        this.setState({mealLogs, totalCalories})
+        this.setState({ mealLogs, totalCalories })
       })
     }
     this.editCloseHandler()
@@ -254,35 +256,35 @@ class Logs extends Component {
       if (mealLogs != null) {
         mealLogs.map((log) => totalCalories += log.calories)
       }
-      this.setState({mealLogs, totalCalories})
+      this.setState({ mealLogs, totalCalories })
     })
   }
 
   renderRecords() {
     let { mealLogs } = this.state
     return mealLogs.map((log) => {
-      let { date, calories, title, _id} = log
+      let { date, calories, title, _id } = log
       date = moment.tz(date, 'Asia/Tbilisi').format('YYYY-MM-DD HH:mm')
       return (
         <Record key={_id}>
-        <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format("MM/DD/YYYY")}</div>
-        <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format("HH:mm")}</div>
-        <div style={{ flex: 1 }}>{title}</div>
-        <div style={{ flex: 1, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>{calories} cal</div>
-        <IconsWrapper style={{ flex: 0.2 }}>
-          <div onClick={() => this.editOpenHandler(false, _id)}>
-            <EditIcon
-              width={13}
-              height={13}
-              color="gray"
-              styles={{ cursor: 'pointer' }}
-            />
-          </div>
-          <div onClick={() => this.onDelete(_id)}>
-            <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
-          </div>
-        </IconsWrapper>
-      </Record>
+          <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format("MM/DD/YYYY")}</div>
+          <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format("HH:mm")}</div>
+          <div style={{ flex: 1 }}>{title}</div>
+          <div style={{ flex: 1, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>{calories} cal</div>
+          <IconsWrapper style={{ flex: 0.2 }}>
+            <div onClick={() => this.editOpenHandler(false, _id)}>
+              <EditIcon
+                width={13}
+                height={13}
+                color="gray"
+                styles={{ cursor: 'pointer' }}
+              />
+            </div>
+            <div onClick={() => this.onDelete(_id)}>
+              <DeleteIcon width={11} height={11} color="red" styles={{ cursor: 'pointer' }} />
+            </div>
+          </IconsWrapper>
+        </Record>
       )
     })
   }
@@ -291,102 +293,63 @@ class Logs extends Component {
     const { isEditMealShowing } = this.state
     const dietBroken = this.state.totalCalories > this.state.expectedCalories
     return (
-      <AuthConsumer>
-        {({ isAuth, login, role, logout }) => (
-          <Wrapper>
-            <BaseHeader role={this.props.role} onLogout={logout} />
-            <HeaderDecoration>Meals with Calories {this.props.match.params.userId ? `for ${this.state.email}` : ''}</HeaderDecoration>
-            <CaloriesInfo>
-              <div
-                style={{ display: 'flex', maxWidth: '60px', lineHeight: 1.5, marginTop: '20px', marginRight: '10px' }}
-              >
-                Expected Calories:
-              </div>
-              <Input
-                type="number"
-                onChange={e => this.onExpectedCaloriesChange(e)}
-                value={this.state.expectedCalories}
-                placeholder="Expected Calories Today"
-              />
-              {this.state.updateLoading ? (
-                <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />
-              ) : (
-                <UpdateButton onClick={() => this.updateExpectedCalories()}>Update</UpdateButton>
-              )}
+      <Wrapper>
 
-              <div style={{ display: 'flex', marginTop: 15, fontSize: 16 }}>
-                Total calories :{' '}
-                <div
-                  style={{
-                    color: dietBroken ? 'red' : 'rgb(100, 196, 123)',
-                    fontWeight: 'bold',
-                    marginLeft: 5,
-                    fontSize: 16
-                  }}
-                >
-                  {' '}
-                  {this.state.totalCalories}
+        <div style={{ maxWidth: '900px', margin: '40px auto', boxShadow: '0 1px 5px rgba(0, 0, 0, 0.46)', backgroundColor: "#F6F5F9", borderRadius: 6, overflow: 'hidden' }}>
+          <Tabs />
+          <div style={{ padding: 30 }}>
+
+            <div style={{ color: '#3D477B', fontSize: 22, marginBottom: 15 }}>Your Daily Summary</div>
+            <div style={{ borderTop: '1px solid #DBDEED', borderBottom: '1px solid #DBDEED', padding: '10px 0', display: 'flex', justifyContent: 'space-between' }}>
+              <Button />
+
+              <div style={{ display: 'flex' }}>
+
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'space-between', paddingRight: '25px' }}>
+                  <div style={{ fontSize: 14, color: '#B2B6CB' }}>
+                    Expected Cal
+                </div>
+                  <div style={{ fontSize: 14, color: '#3D477B', fontWeight: 'bold', alignItems: '' }}>
+                    1,264
+                </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marignRight: '15' }}>
+                  <div style={{ fontSize: 14, color: '#B2B6CB' }}>
+                    Date
+              </div>
+                  <div style={{ fontSize: 14, color: '#3D477B', fontWeight: 'bold', alignItems: '' }}>
+                    Friday, 20 Feb
+              </div>
                 </div>
               </div>
-            </CaloriesInfo>
-            <RecordsHeader style={{ margin: 'auto', marginTop: '20px' }}>Filter</RecordsHeader>
-            <FilterWrapper
-            >
-              <div
-                style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
-              >
-                <DatePicker date={this.state.fromDate} onChange={this.onFromDateChange} headerText="Date From" marginRight />
-                <DatePicker date={this.state.toDate} onChange={this.onToDateChange} headerText="Date To" />
-              </div>
-              <div
-                style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}
-              >
-                <TimePicker time={this.state.fromTime} onChange={this.onFromTimeChange} headerText="Time From" marginRight />
-                <TimePicker time={this.state.toTime} onChange={this.onToTimeChange} headerText="Time To" />
-              </div>
-              {this.state.searchLoading ? (
-                <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />
-              ) : (
-                <SearchButton onClick={() => this.onSearch()}>Search</SearchButton>
-              )}
-            </FilterWrapper>
-            <Add id="edit-meal" isEditMealShowing={isEditMealShowing}>
-              <InnerWrapper>
-                <AddContainer>
-                  <RecordsHeader>{this.state.isAdd ? 'Add' : 'Edit'} Meal</RecordsHeader>
-                  <DatePicker date={this.state.addDate} onChange={this.onAddDateChange} />
-                  <TimePicker time={this.state.addTime} onChange={this.onAddTimeChange} />
-                  <Input value={this.state.addTitle} onChange={(e) => this.onAddTitleChange(e)} placeholder="Title" />
-                  <Input min={0} value={this.state.addCalories || ''} onChange={(e) => this.onAddCaloriesChange(e)} type="number" placeholder="Calories" />
-                  <div style={{display: 'flex'}}>
-                  {this.state.saveError === 1 ? <SaveErrorText>{this.state.saveErrorText}</SaveErrorText> : null}
-                  </div>
-                  <div
-                    style={{
-                      marginLeft: 'auto',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      width: 140
-                    }}
-                  >
-                    <div onClick={this.editCloseHandler} style={{ cursor: 'pointer' }}>
-                      Cancel
-                    </div>
-                    <Button onClick={() => this.onSave()}>Save</Button>
-                  </div>
-                </AddContainer>
-              </InnerWrapper>
-            </Add>
-            <InnerWrapper>
-              <AddRecordButton onClick={() => this.editOpenHandler(true)}>Add New</AddRecordButton>
-              <Records>
-                <RecordsHeader>Records</RecordsHeader>
-                    {this.renderRecords()}
-              </Records>
-            </InnerWrapper>
-          </Wrapper>
-        )}
-      </AuthConsumer>
+
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginTop: 15, padding: '0 25px' }}>
+              <div>Products</div>
+              <div>Calories</div>
+              <div>Date</div>
+              <div>Time</div>
+            </div>
+            <Table />
+            <div style={{ display: 'flex', justifyContent: 'space-between', height: 45, color: '#2E3654', backgroundColor: 'white', padding: 25, boxShadow: '0 1px 5px rgba(0, 0, 0, 0.46)', margin: '10px 0', alignItems: 'center', marginTop: 40, borderRadius: 4 }}>
+              <div>Total</div>
+              <div>Title</div>
+              <div>Calories</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', height: 45, color: '#5181FB', backgroundColor: 'white', padding: 25, boxShadow: '0 1px 5px rgba(0, 0, 0, 0.46)', margin: '10px 0', alignItems: 'center', borderRadius: 4 }}>
+              <div>Your Daily Goal</div>
+              <div>Title</div>
+              <div>Calories</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', height: 45, backgroundColor: '#FFC1C1', color: '#974E4E', padding: 25, boxShadow: '0 1px 5px rgba(0, 0, 0, 0.46)', margin: '10px 0', alignItems: 'center', marginTop: 40, borderRadius: 4 }}>
+              <div>Remaining</div>
+              <div>Title</div>
+              <div>Calories</div>
+            </div>
+          </div>
+        </div>
+      </Wrapper>
+
     )
   }
 }

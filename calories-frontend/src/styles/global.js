@@ -1,20 +1,19 @@
 import { injectGlobal } from 'styled-components'
 import fonts from './fonts'
-import KrubRegular from '../assets/fonts/Krub-Regular.ttf'
+import Roboto from '../assets/fonts/Roboto-Regular.ttf'
 
 injectGlobal`
   @font-face {
-    font-family: KrubRegular;
-    src: url('${KrubRegular}') format('opentype');
+    font-family: Roboto;
+    src: url('${Roboto}') format('opentype');
   }
 
   * {
-      font-family: KrubRegular;
+      font-family: Roboto;
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-size: ${fonts.sizes.normal};
-  background-color: #fff;
+      font-size: 18;
       text-decoration: none;
   }
 

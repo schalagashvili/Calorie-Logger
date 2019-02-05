@@ -1,11 +1,16 @@
 import styled from 'styled-components'
 import colors from '../../styles/colors'
 import sizes, { tablet } from '../../styles/sizes'
+import bgImage from '../../assets/images/food.jpg'
+// import Button from '@material-ui/core/Button'
 
 export const Wrapper = styled.div`
+  background-image: url(${bgImage});
+  background-size: cover;
   display: flex;
   flex-direction: column;
   width: 100%;
+
 `
 
 export const Header = styled.div`
