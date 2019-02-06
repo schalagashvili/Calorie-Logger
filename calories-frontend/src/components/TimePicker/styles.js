@@ -4,8 +4,6 @@ export const InputHeader = styled.div`
   background-color: white;
   position: absolute;
   z-index: 3;
-  left: 20px;
-  padding: 0 4px;
   top: -8px;
   font-size: 11px;
 `

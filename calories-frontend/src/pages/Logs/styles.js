@@ -29,6 +29,7 @@ export const FilterWrapper = styled.div`
   flex-wrap: wrap;
   overflow: hidden;
   margin: auto;
+  padding-bottom: 20px;
   justify-content: center;
   align-items: center;
   ${tablet} {
@@ -66,24 +67,27 @@ export const Add = styled.div`
 export const AddContainer = styled.div`
   display: flex;
   flex-direction: column;
+  max-width: 600px;
+  margin: auto;
   /* padding: 0 20px; */
   /* padding-bottom: 8px; */
 `
 
 export const Button = styled.div`
-  background-color: ${props => (props.logout ? colors.secondaryButton : colors.primaryButton)};
+  background-color: ${props => props.color};
   max-width: 100px;
-  padding: 5px 20px;
+  padding: 8px 20px;
   margin-top: ${props => (props.logout ? '0px' : '20px')};
   color: white;
+  height: 36px;
   font-size: ${props => (props.logout ? '16px' : '16px')};
   display: flex;
   box-shadow: ${colors.primaryBoxShadow};
   font-weight: medium;
   justify-content: center;
   cursor: pointer;
-  margin-left: auto;
-  border-radius: ${sizes.buttonBorderRadius};
+  border-radius: 5px;
+  margin-right: 15px;
 `
 
 export const SearchButton = styled.div`
@@ -126,13 +130,15 @@ export const Title = styled.div`
 export const InnerWrapper = styled.div`
   max-width: 700px;
   width: 100%;
+  margin: 20px auto;
 `
 
 export const Record = styled.div`
   display: flex;
-  padding: 15px 0;
+  padding: 15px;
   margin-top: 10px;
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: white;
   justify-content: space-between;
   border-radius: 4px;
 `
@@ -153,20 +159,7 @@ export const IconsWrapper = styled.div`
 
 export const RecordsHeader = styled.div`
   font-size: 18px;
-  text-transform: capitalize;
-  text-transform: uppercase;
-  color: #193466;
-  background: -moz-linear-gradient(left, rgba(4, 45, 107, 1) 0%, rgba(139, 52, 120, 1) 100%);
-  background: -webkit-linear-gradient(left, rgba(4, 45, 107, 1) 0%, rgba(139, 52, 120, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#042d6b', endColorstr='#8b3478',GradientType=1 );
-  -webkit-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#042d6b', endColorstr='#8b3478',GradientType=1 );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-  align-self: baseline;
-  -ms-flex-item-align: baseline;
-  -webkit-align-self: baseline;
-  /* margin: 10px; */
+  color: black;
   font-weight: 600;
 `
 
@@ -176,13 +169,11 @@ export const CaloriesInfo = styled.div`
   margin: auto;
   justify-content: space-between;
   align-items: center;
-  @media (max-width: 768px) {
-    flex-direction: column;
-    justify-content: center;
-    width: auto;
-    margin: 15px auto;
-    align-items: center;
-  }
+  flex-direction: column;
+  justify-content: center;
+  width: auto;
+  margin: 15px auto;
+  align-items: center;
 `
 
 export const AddRecordButton = styled.div`

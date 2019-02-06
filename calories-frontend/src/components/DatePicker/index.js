@@ -1,54 +1,62 @@
-// import 'date-fns'
-// import React from 'react'
-// import PropTypes from 'prop-types'
-// import Grid from '@material-ui/core/Grid'
-// import { withStyles } from '@material-ui/core/styles'
-// import DateFnsUtils from '@date-io/date-fns'
-// import { MuiPickersUtilsProvider, TimePicker, DatePicker } from 'material-ui-pickers'
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import { InputHeader, Wrapper } from '../TimePicker/styles'
 
-// const styles = {
-//   grid: {
-//     width: '60%'
-//   }
-// }
+const styles = theme => ({
+  root: {
+    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+    borderRadius: 3,
+    border: 0,
+    color: 'white',
+    height: 48,
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)'
+  },
+  label: {
+    textTransform: 'capitalize'
+  },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  textField: {
+    border: 'none'
+  }
+})
 
-// class MaterialUIPickers extends React.Component {
-//   state = {
-//     // The first commit of Material-UI
-//     selectedDate: new Date('2014-08-18T21:11:54')
-//   }
+const style = {
+  // background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+  borderRadius: 4,
+  height: 45,
+  flex: 1,
+  maxWidth: 600,
+  width: 265
+}
 
-//   handleDateChange = date => {
-//     this.setState({ selectedDate: date })
-//   }
+function DatePickers(props) {
+  const { classes, headerText, onChange } = props
+  return (
+    <Wrapper>
+      <InputHeader>{headerText}</InputHeader>
+      <TextField
+        id='date'
+        onChange={e => onChange(e)}
+        type='date'
+        value={props.date}
+        // defaultValue={props.date || new Date().toISOString().substr(0, 10)}
+        className={classes.textField}
+        InputLabelProps={{
+          shrink: true
+        }}
+        style={style}
+      />
+    </Wrapper>
+  )
+}
 
-//   render() {
-//     const { classes, headerText } = this.props
-//     const { selectedDate } = this.state
+DatePickers.propTypes = {
+  classes: PropTypes.object.isRequired
+}
 
-//     return (
-//       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-//         <Grid container className={classes.grid} justify='space-around'>
-//           <DatePicker
-//             margin='normal'
-//             label={headerText}
-//             value={selectedDate}
-//             onChange={this.handleDateChange}
-//           />
-//           <TimePicker
-//             margin='normal'
-//             label={headerText}
-//             value={selectedDate}
-//             onChange={this.handleDateChange}
-//           />
-//         </Grid>
-//       </MuiPickersUtilsProvider>
-//     )
-//   }
-// }
-
-// MaterialUIPickers.propTypes = {
-//   classes: PropTypes.object.isRequired
-// }
-
-// export default withStyles(styles)(MaterialUIPickers)
+export default withStyles(styles)(DatePickers)

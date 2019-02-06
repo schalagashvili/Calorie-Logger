@@ -18,12 +18,11 @@ export const Button = styled.div`
 `
 export const Input = styled.input`
   height: 45px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
   border: none;
-  border-radius: ${sizes.borderRadius};
   background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   outline: none;
-  padding: 10px 15px;
   z-index: 2;
+  max-width: 600px;
   margin-top: 20px;
 `

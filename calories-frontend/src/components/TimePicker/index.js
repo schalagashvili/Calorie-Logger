@@ -21,8 +21,6 @@ const style = {
   borderRadius: 4,
   height: 45,
   flex: 1,
-  padding: '10px 20px',
-  boxShadow: '0 1px 5px rgba(0, 0, 0, 0.2)',
   maxWidth: 600,
   width: 265
 }

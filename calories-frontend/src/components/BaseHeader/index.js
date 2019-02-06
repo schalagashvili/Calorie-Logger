@@ -11,12 +11,12 @@ export default class BaseHeader extends React.Component {
   render() {
     return (
       <Header>
-        <div onClick={() => {
+        {/* <div onClick={() => {
           this.props.role == 'admin' || this.props.role == 'manager' ? history.push('/users') : history.push('logs')
         }}>
           <img src={logo} alt="logo" style={{ width: 180, cursor: 'pointer' }} />
-        </div>{' '}
-        <Button onClick={() => this.onLogout()} logout>
+        </div>{' '} */}
+        <Button onClick={() => this.onLogout()} logout color='rgba(0, 0, 0, 0.5)'>
           Logout
         </Button>
       </Header>
