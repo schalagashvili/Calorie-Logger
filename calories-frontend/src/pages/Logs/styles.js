@@ -1,16 +1,18 @@
 import styled from 'styled-components'
 import colors from '../../styles/colors'
 import sizes, { tablet } from '../../styles/sizes'
-import bgImage from '../../assets/images/food.jpg'
+import bgImage from '../../assets/images/bgImage.jpg'
 // import Button from '@material-ui/core/Button'
 
 export const Wrapper = styled.div`
-  background-image: url(${bgImage});
-  background-size: cover;
+  /* background-image: url(${bgImage}); */
+  /* background-size: cover; */
+  background-color: #F5F5F5;
   display: flex;
   flex-direction: column;
   width: 100%;
-
+  min-height: 100vh;
+  overflow: hidden;
 `
 
 export const Header = styled.div`
@@ -21,16 +23,17 @@ export const Header = styled.div`
 `
 
 export const FilterWrapper = styled.div`
-max-width: 600px;
-display: flex;
-flex:1;
-flex-wrap: wrap;
-margin: auto;
-justify-content: center;
-align-items: center;
-${tablet} {
-  flex-direction: column;
-}
+  max-width: 600px;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  overflow: hidden;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  ${tablet} {
+    flex-direction: column;
+  }
 `
 
 export const HeaderDecoration = styled.div`
@@ -51,21 +54,20 @@ export const NavigationTab = styled.div`
 
 export const Add = styled.div`
   border-bottom: none;
-  border-top: 1px solid #dce0e0;
+  /* border-top: 1px solid #dce0e0; */
   width: 100%;
   display: flex;
   justify-content: center;
-  height: 0;
   overflow: hidden;
-  margin: 20px 0;
-  margin-bottom: 30px;
+  /* margin: 20px 0; */
+  /* margin-bottom: 30px; */
 `
 
 export const AddContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 20px;
-  padding-bottom: 8px;
+  /* padding: 0 20px; */
+  /* padding-bottom: 8px; */
 `
 
 export const Button = styled.div`
@@ -122,25 +124,24 @@ export const Title = styled.div`
 `
 
 export const InnerWrapper = styled.div`
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
-  margin: auto;
 `
 
 export const Record = styled.div`
-  border-top: 1px solid #dce0e0;
   display: flex;
-  padding: 15px;
+  padding: 15px 0;
+  margin-top: 10px;
   background-color: white;
   justify-content: space-between;
+  border-radius: 4px;
 `
 
 export const Records = styled.div`
   display: flex;
-  margin: 20px;
-  background-color: white;
-  flex-direction: column;
-  box-shadow: ${colors.primaryBoxShadow};
+  margin: 8px;
+  flex-direction: column; 
+  /* box-shadow: ${colors.primaryBoxShadow}; */
   border-radius: ${sizes.borderRadius};
 `
 
@@ -165,7 +166,7 @@ export const RecordsHeader = styled.div`
   align-self: baseline;
   -ms-flex-item-align: baseline;
   -webkit-align-self: baseline;
-  margin: 10px;
+  /* margin: 10px; */
   font-weight: 600;
 `
 

@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import colors from '../../styles/colors'
 import sizes from '../../styles/sizes'
 import bgImage from '../../assets/images/bgImage.jpg'
-// import Button from '@material-ui/core/Button'
 
 export const Wrapper = styled.div`
   background-image: url(${bgImage});
@@ -26,7 +25,7 @@ export const LoginContainer = styled.div`
   width: 400px;
   height: 400px;
   background-color: rgba(0, 0, 0, 0.7);
-  box-shadow: 0px 0px 238px 14px rgba(5,5,5,1);
+  box-shadow: 0px 0px 238px 14px rgba(5, 5, 5, 1);
   border-radius: ${sizes.borderRadius};
   display: flex;
   flex-direction: column;
@@ -40,7 +39,7 @@ export const MailInput = styled.input`
   border: 1px solid #dce0e0;
   border-radius: 35px;
   outline: none;
-  color: white; 
+  color: white;
   padding: 10px 30px;
   font-size: 16px;
   background-color: transparent;
@@ -61,9 +60,8 @@ export const InputWrapper = styled.div`
   background-color: transparent;
 `
 
-
 export const StyledButton = styled.div`
-  background: #FF5A5F;
+  background: #ff5a5f;
   border-radius: 35px;
   border: 0;
   color: white;
@@ -77,8 +75,8 @@ export const StyledButton = styled.div`
   margin-top: 30px;
   padding: 0 30px;
   letter-spacing: 0.7px;
-  box-shadow: 0 3px 5px 2px rgba(255, 105, 135, .1);
+  box-shadow: 0 3px 5px 2px rgba(255, 105, 135, 0.1);
   &:hover {
     cursor: pointer;
   }
-`;
+`

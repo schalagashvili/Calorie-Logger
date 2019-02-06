@@ -33,10 +33,10 @@ function TimePickers(props) {
     <Wrapper marginRight={marginRight} marginLeft={marginLeft}>
       <InputHeader>{headerText}</InputHeader>
       <TextField
-        id="time"
-        type="time"
+        id='time'
+        type='time'
         value={props.time}
-        onChange={(e) => onChange(e)}
+        onChange={e => onChange(e)}
         // defaultValue={props.time || new Date().toTimeString().substr(0, 5)}
         className={classes.textField}
         InputLabelProps={{

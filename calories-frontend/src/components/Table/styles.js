@@ -1,8 +1,14 @@
-import TableRow from '@material-ui/core/TableRow';
+import TableRow from '@material-ui/core/TableRow'
 import styled from 'styled-components'
 
 export const StyledRow = styled(TableRow)`
-    &:hover {
+  &:hover {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+  }
+`
+
+const Wrapper = styled.div`
+  &.MuiPaper-elevation2-15 {
+    color: blue;
   }
 `
