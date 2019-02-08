@@ -3,19 +3,21 @@ import colors from './colors'
 import sizes from './sizes'
 
 export const Button = styled.div`
-  background-color: ${colors.primaryButton};
-  max-width: ${props => props.width};
-  width: 50%;
-  padding: 15px 20px;
-  margin-top: 20px;
+  background-color: ${props => props.color};
+  max-width: 100px;
+  padding: 8px 20px;
   color: white;
-  font-size: 18px;
+  height: 36px;
+  font-size: ${props => (props.logout ? '16px' : '16px')};
   display: flex;
+  box-shadow: ${colors.primaryBoxShadow};
   font-weight: medium;
   justify-content: center;
   cursor: pointer;
-  border-radius: ${sizes.buttonBorderRadius};
+  border-radius: 25px;
+  margin-right: 15px;
 `
+
 export const Input = styled.input`
   height: 45px;
   border: none;

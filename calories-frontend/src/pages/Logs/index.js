@@ -1,36 +1,13 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import Spinner from 'react-spinkit'
 import moment from 'moment-timezone'
-import Drawer from '@material-ui/core/Drawer'
-import {
-  HeaderDecoration,
-  Wrapper,
-  Add,
-  AddContainer,
-  Button,
-  InnerWrapper,
-  Record,
-  Records,
-  IconsWrapper,
-  RecordsHeader,
-  CaloriesInfo,
-  UpdateButton,
-  SearchButton,
-  AddRecordButton,
-  FilterWrapper
-} from './styles'
-import { SaveErrorText } from '../SignUp/styles'
-import { DeleteIcon, EditIcon } from '../../assets/icons'
-import { DatePicker, TimePicker } from '../../components'
-import { Input } from '../../styles/mixins'
-import TweenLite from 'gsap'
+import { Wrapper, InnerWrapper, Records } from './styles'
+import { Button } from '../../styles/mixins'
+import { Filter, Record, Settings, AddRecord } from '../../components'
 import BaseHeader from '../../components/BaseHeader'
 import { AuthConsumer } from '../../AuthContext'
 import config from '../../config'
 import { insertFunc } from '../../utility'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 
 class Logs extends Component {
   constructor(props) {
@@ -45,7 +22,7 @@ class Logs extends Component {
       mealLogs: [],
       fromDate: today,
       addBottom: false,
-      infoBottom: false,
+      settingsBottom: false,
       filterBottom: false,
       toDate: today,
       page: 1,
@@ -57,12 +34,6 @@ class Logs extends Component {
       fromTime: '00:00',
       toTime: new Date().toTimeString().substr(0, 5)
     }
-    this.onFromDateChange = this.onFromDateChange.bind(this)
-    this.onToDateChange = this.onToDateChange.bind(this)
-    this.onFromTimeChange = this.onFromTimeChange.bind(this)
-    this.onToTimeChange = this.onToTimeChange.bind(this)
-    this.onAddDateChange = this.onAddDateChange.bind(this)
-    this.onAddTimeChange = this.onAddTimeChange.bind(this)
   }
 
   componentDidMount() {
@@ -85,7 +56,6 @@ class Logs extends Component {
       headers: { authorization: token },
       data: { fromDate, toDate, fromTime, toTime, page }
     }).then(response => {
-      console.log(response)
       let totalCalories = 0
       const mealLogs = response.data.logs
       if (mealLogs != null) {
@@ -97,7 +67,6 @@ class Logs extends Component {
         logsCount: response.data.logsCount,
         page: this.state.page + 1
       })
-      console.log(this.state.mealLogs)
     })
   }
 
@@ -112,13 +81,11 @@ class Logs extends Component {
       headers: { authorization: token },
       data: { fromDate, toDate, fromTime, toTime, page }
     }).then(response => {
-      console.log(response)
       let totalCalories = 0
       const mealLogs = response.data.logs
       if (mealLogs != null) {
         mealLogs.map(log => (totalCalories += log.calories))
       }
-      console.log(mealLogs)
       const mergedLogs = this.state.mealLogs.concat(mealLogs)
       this.setState({
         mealLogs: mergedLogs,
@@ -127,7 +94,7 @@ class Logs extends Component {
     })
   }
 
-  onSearch() {
+  onSearch = () => {
     const token = this.props.token
     const userId = this.props.match.params.userId
     const { fromDate, toDate, fromTime, toTime } = this.state
@@ -143,7 +110,6 @@ class Logs extends Component {
       if (mealLogs != null) {
         mealLogs.map(log => (totalCalories += log.calories))
       }
-      console.log(mealLogs, 'მიალოგები')
       this.setState({
         mealLogs: mealLogs != null ? mealLogs.reverse() : [],
         totalCalories,
@@ -154,10 +120,6 @@ class Logs extends Component {
   }
 
   editOpenHandler = (isAdd, id) => {
-    const { isEditMealShowing } = this.state
-    if (!isEditMealShowing) {
-      // TweenLite.to('#edit-meal', 0.4, { height: '400px', borderBottom: '1px solid #dce0e0' })
-    }
     if (isAdd) {
       const addDate = new Date().toISOString().substr(0, 10)
       const addTime = new Date().toTimeString().substr(0, 5)
@@ -178,51 +140,41 @@ class Logs extends Component {
     }
   }
 
-  // editCloseHandler = () => {
-  //   const { isEditMealShowing } = this.state
-
-  //   if (isEditMealShowing) {
-  //     TweenLite.to('#edit-meal', 0.4, { height: 0, borderBottom: 'none' })
-  //   }
-  //   this.setState({ isEditMealShowing: false })
-  // }
-
-  onExpectedCaloriesChange(e) {
-    let calories = e.target.value
+  onExpectedCaloriesChange = calories => {
     if (calories < 0) {
       calories *= -1
     }
     this.setState({ expectedCalories: calories })
   }
 
-  updateExpectedCalories() {
+  updateExpectedCalories = () => {
     this.setState({ updateLoading: true })
     const { expectedCalories } = this.state
     const token = this.props.token
     const userId = this.props.match.params.userId
     axios({
-      method: 'post',
+      method: 'put',
       url: `${config.apiUrl}/editUser/${userId != null ? userId : ''}`,
       headers: { authorization: token },
       data: { expectedCalories }
-    }).then(response => {
+    }).then(() => {
       this.setState({ updateLoading: false })
     })
   }
 
-  onAddDateChange(e) {
+  onAddDateChange = e => {
     this.setState({ addDate: e.target.value })
   }
 
-  onAddTimeChange(e) {
+  onAddTimeChange = e => {
     this.setState({ addTime: e.target.value })
   }
 
-  onAddTitleChange(e) {
+  onAddTitleChange = e => {
     this.setState({ addTitle: e.target.value })
   }
 
-  onAddCaloriesChange(e) {
+  onAddCaloriesChange = e => {
     let calories = e.target.value
     if (calories < 0) {
       calories *= -1
@@ -230,7 +182,7 @@ class Logs extends Component {
     this.setState({ addCalories: parseFloat(calories) })
   }
 
-  onSave() {
+  onSave = () => {
     let { addDate, addTime, addTitle, addCalories, isAdd } = this.state
     if (addTitle === '' || addCalories === '') {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
@@ -275,7 +227,7 @@ class Logs extends Component {
           calories: addCalories,
           date: datetime
         }
-      }).then(response => {
+      }).then(() => {
         let mealLogs = this.state.mealLogs
         let totalCalories = 0
         const editedLogIndex = mealLogs.findIndex(log => log._id === this.state.editId)
@@ -294,26 +246,25 @@ class Logs extends Component {
         this.setState({ mealLogs, totalCalories })
       })
     }
-    // this.editCloseHandler()
   }
 
-  onFromDateChange(e) {
+  onFromDateChange = e => {
     this.setState({ fromDate: e.target.value })
   }
 
-  onToDateChange(e) {
+  onToDateChange = e => {
     this.setState({ toDate: e.target.value })
   }
 
-  onFromTimeChange(e) {
+  onFromTimeChange = e => {
     this.setState({ fromTime: e.target.value })
   }
 
-  onToTimeChange(e) {
+  onToTimeChange = e => {
     this.setState({ toTime: e.target.value })
   }
 
-  onDelete(id) {
+  onDelete = id => {
     const userId = this.props.match.params.userId
     const token = this.props.token
     const { fromDate, toDate, fromTime, toTime, page } = this.state
@@ -338,7 +289,6 @@ class Logs extends Component {
       headers: { authorization: token },
       data: { fromDate, toDate, fromTime, toTime, logsPage }
     }).then(response => {
-      console.log(response)
       let totalCalories = 0
       const mealLogs = response.data.logs
       if (mealLogs != null) {
@@ -350,7 +300,6 @@ class Logs extends Component {
         logsCount: response.data.logsCount,
         page: 1
       })
-      console.log(this.state.mealLogs)
     })
   }
 
@@ -360,192 +309,19 @@ class Logs extends Component {
       let { date, calories, title, _id } = log
       date = moment.tz(date, 'Asia/Tbilisi').format('YYYY-MM-DD HH:mm')
       return (
-        <Record key={_id}>
-          {totalCalories > expectedCalories ? (
-            <FontAwesomeIcon
-              icon={faExclamationCircle}
-              style={{ color: 'rgb(225,0,80)', marginRight: 15 }}
-            />
-          ) : (
-            <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#91c653', marginRight: 15 }} />
-          )}
-          <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format('MM/DD/YYYY')}</div>
-          <div style={{ flex: 0.5 }}>{moment.tz(date, 'Asia/Tbilisi').format('HH:mm')}</div>
-          <div style={{ flex: 1 }}>{title}</div>
-          <div
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
-          >
-            {calories} cal
-          </div>
-          <IconsWrapper style={{ flex: 0.2 }}>
-            <div
-              onClick={() => {
-                this.editOpenHandler(false, _id)
-                this.toggleDrawer('addBottom', true)
-              }}
-            >
-              <EditIcon width={13} height={13} color='gray' styles={{ cursor: 'pointer' }} />
-            </div>
-            <div onClick={() => this.onDelete(_id)}>
-              <DeleteIcon width={11} height={11} color='red' styles={{ cursor: 'pointer' }} />
-            </div>
-          </IconsWrapper>
-        </Record>
+        <Record
+          totalCalories={totalCalories}
+          expectedCalories={expectedCalories}
+          calories={calories}
+          title={title}
+          id={_id}
+          editOpenHandler={this.editOpenHandler}
+          toggleDrawer={this.toggleDrawer}
+          onDelete={this.onDelete}
+          date={date}
+        />
       )
     })
-  }
-
-  caloriesInfo = dietBroken => {
-    return (
-      <Drawer anchor='bottom' open={this.state.infoBottom}>
-        <CaloriesInfo>
-          <div
-            style={{
-              display: 'flex',
-              lineHeight: 1.5,
-              marginTop: '20px',
-              marginRight: '10px'
-            }}
-          >
-            Expected Calories:
-          </div>
-          <Input
-            type='number'
-            onChange={e => this.onExpectedCaloriesChange(e)}
-            value={this.state.expectedCalories}
-            placeholder='Expected Calories Today'
-          />
-          <Button
-            onClick={() => {
-              this.updateExpectedCalories()
-              this.toggleDrawer('infoBottom', false)
-            }}
-            color='#5FBA7D'
-          >
-            Update
-          </Button>
-          <Button onClick={() => this.toggleDrawer('infoBottom', false)} color='grey'>
-            Cancel
-          </Button>
-
-          <div style={{ display: 'flex', marginTop: 15, fontSize: 16 }}>
-            Total calories :{' '}
-            <div
-              style={{
-                color: dietBroken ? 'red' : 'rgb(100, 196, 123)',
-                fontWeight: 'bold',
-                marginLeft: 5,
-                fontSize: 16
-              }}
-            >
-              {' '}
-              {this.state.totalCalories}
-            </div>
-          </div>
-        </CaloriesInfo>
-      </Drawer>
-    )
-  }
-
-  addAndEdit = isEditMealShowing => {
-    return (
-      <Drawer anchor='bottom' open={this.state.addBottom}>
-        <Add id='edit-meal' isEditMealShowing={isEditMealShowing}>
-          <InnerWrapper>
-            <AddContainer>
-              <RecordsHeader>{this.state.isAdd ? 'Add' : 'Edit'} Meal</RecordsHeader>
-              <DatePicker date={this.state.addDate} onChange={this.onAddDateChange} />
-              <TimePicker time={this.state.addTime} onChange={this.onAddTimeChange} />
-              <Input
-                value={this.state.addTitle}
-                onChange={e => this.onAddTitleChange(e)}
-                placeholder='Title'
-              />
-              <Input
-                min={0}
-                value={this.state.addCalories || ''}
-                onChange={e => this.onAddCaloriesChange(e)}
-                type='number'
-                placeholder='Calories'
-              />
-              <div style={{ display: 'flex' }}>
-                {this.state.saveError === 1 ? (
-                  <SaveErrorText>{this.state.saveErrorText}</SaveErrorText>
-                ) : null}
-              </div>
-              <div
-                style={{
-                  marginLeft: 'auto',
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  width: 178
-                }}
-              >
-                <Button
-                  onClick={() => {
-                    this.onSave()
-                  }}
-                  color='#5FBA7D'
-                >
-                  Save
-                </Button>
-                <Button onClick={() => this.toggleDrawer('addBottom', false)} color='grey'>
-                  Cancel
-                </Button>
-              </div>
-            </AddContainer>
-          </InnerWrapper>
-        </Add>
-      </Drawer>
-    )
-  }
-
-  filterWrapper = () => {
-    return (
-      <Drawer anchor='bottom' open={this.state.filterBottom}>
-        <RecordsHeader style={{ margin: 'auto', marginTop: '20px' }}>Filter</RecordsHeader>
-        <FilterWrapper>
-          <div style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}>
-            <DatePicker
-              date={this.state.fromDate}
-              onChange={this.onFromDateChange}
-              headerText='Date From'
-              marginRight
-            />
-            <DatePicker
-              date={this.state.toDate}
-              onChange={this.onToDateChange}
-              headerText='Date To'
-            />
-          </div>
-          <div style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}>
-            <TimePicker
-              time={this.state.fromTime}
-              onChange={this.onFromTimeChange}
-              headerText='Time From'
-              marginRight
-            />
-            <TimePicker
-              time={this.state.toTime}
-              onChange={this.onToTimeChange}
-              headerText='Time To'
-            />
-          </div>
-          <Button
-            onClick={() => {
-              this.onSearch()
-              this.toggleDrawer('filterBottom', false)
-            }}
-            color='rgb(225, 0, 80)'
-          >
-            Search
-          </Button>
-          <Button onClick={() => this.toggleDrawer('filterBottom', false)} color='grey'>
-            Cancel
-          </Button>
-        </FilterWrapper>
-      </Drawer>
-    )
   }
 
   toggleDrawer = (side, open) => {
@@ -562,39 +338,98 @@ class Logs extends Component {
         {({ isAuth, login, role, logout }) => (
           <Wrapper>
             <BaseHeader role={this.props.role} onLogout={logout} />
-            {this.caloriesInfo(dietBroken)}
-            {this.filterWrapper()}
-            {this.addAndEdit(isEditMealShowing)}
+            <Settings
+              updateExpectedCalories={this.updateExpectedCalories}
+              onExpectedCaloriesChange={this.onExpectedCaloriesChange}
+              dietBroken={dietBroken}
+              expectedCalories={this.state.expectedCalories}
+              toggleDrawer={this.toggleDrawer}
+              totalCalories={this.state.totalCalories}
+              settingsBottom={this.state.settingsBottom}
+            />
+            <Filter
+              onSearch={this.onSearch}
+              toggleDrawer={this.toggleDrawer}
+              filterBottom={this.state.filterBottom}
+              fromDate={this.state.fromDate}
+              toDate={this.state.toDate}
+              onFromDateChange={this.onFromDateChange}
+              onToDateChange={this.onToDateChange}
+              fromTime={this.state.fromTime}
+              toTime={this.state.toTime}
+              onFromTimeChange={this.onFromTimeChange}
+              onToTimeChange={this.onToTimeChange}
+            />
+            <AddRecord
+              isEditMealShowing={isEditMealShowing}
+              addBottom={this.state.addBottom}
+              isAdd={this.state.isAdd}
+              addTime={this.state.addTime}
+              addDate={this.state.addDate}
+              onAddDateChange={this.onAddDateChange}
+              onAddTimeChange={this.onAddTimeChange}
+              addTitle={this.state.addTitle}
+              onAddTitleChange={this.onAddTitleChange}
+              onAddCaloriesChange={this.onAddCaloriesChange}
+              saveError={this.state.saveError}
+              saveErrorText={this.state.saveErrorText}
+              onSave={this.onSave}
+              addCalories={this.state.addCalories}
+              toggleDrawer={this.toggleDrawer}
+            />
             <InnerWrapper>
-              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <Button
-                  color='#5FBA7D'
-                  onClick={() => {
-                    this.editOpenHandler(true)
-                    this.toggleDrawer('addBottom', true)
-                  }}
-                >
-                  Add
-                </Button>
-                <Button
-                  color='#2196f3'
-                  onClick={() => {
-                    this.toggleDrawer('filterBottom', true)
-                  }}
-                >
-                  Filter
-                </Button>
-                <Button
-                  color='rgb(225, 0, 80)'
-                  onClick={() => {
-                    this.toggleDrawer('infoBottom', true)
-                  }}
-                >
-                  Settings
-                </Button>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex' }}>
+                  <Button
+                    color='#5FBA7D'
+                    onClick={() => {
+                      this.editOpenHandler(true)
+                      this.toggleDrawer('addBottom', true)
+                    }}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    color='#2196f3'
+                    onClick={() => {
+                      this.toggleDrawer('filterBottom', true)
+                    }}
+                  >
+                    Filter
+                  </Button>
+                  <Button
+                    color='rgb(225, 0, 80)'
+                    onClick={() => {
+                      this.toggleDrawer('settingsBottom', true)
+                    }}
+                  >
+                    Settings
+                  </Button>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ fontSize: 13, color: 'grey' }}>
+                    Expected Calories: {this.state.expectedCalories}
+                  </div>
+                  <div style={{ fontSize: 13, color: 'grey', borderLeft: '1px solid grey' }}>
+                    Total: {this.state.totalCalories}
+                  </div>
+                </div>
               </div>
               <Records>
-                <RecordsHeader>Records</RecordsHeader>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: 12,
+                    color: 'grey',
+                    padding: '10px 137px 5px 45px'
+                  }}
+                >
+                  <div>Meal</div>
+                  <div>Calories</div>
+                  <div>Date</div>
+                  <div>Time</div>
+                </div>
                 {this.renderRecords()}
                 {this.state.logsCount > this.state.mealLogs.length && (
                   <Button onClick={() => this.loadMore(this.state.page)} color='lightGreen'>
