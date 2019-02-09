@@ -1,9 +1,7 @@
 import jwt from 'jwt-simple';
-// import secret string used for tokenization
 import secret from '../secret';
 const UserSchema = require('../models').userSchema;
 
-// generates tokens for users
 exports.tokenForUser = function(user) {
 	const timestamp = new Date().getTime();
 	return jwt.encode({ sub: user.id, iat: timestamp }, secret);

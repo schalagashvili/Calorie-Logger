@@ -5,16 +5,11 @@ import { Strategy as JwtStrategy }  from 'passport-jwt';
 import { ExtractJwt } from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 
-// Create local strategy
 const localOptions = { usernameField: 'email' };
 const localLogin = new LocalStrategy(localOptions, function (email, password, done) {
-	// Verify this email and password, call done with the user
-	// if it is the correct email and password
-	// otherwise, call done with false
 	UserSchema.findOne({ email: email }, function (err, user) {
 		if (err) { return done(err); }
 		if (!user) { return done(null, false); }
-		// compare passwords - is `password` equal to user.password?
 		user.comparePassword(password, function (err, isMatch) {
 			if (err) {
 				return done(err);
@@ -26,20 +21,11 @@ const localLogin = new LocalStrategy(localOptions, function (email, password, do
 		});
 	});
 });
-
-// Setup options for JWT Strategy
 const jwtOptions = {
 	jwtFromRequest: ExtractJwt.fromHeader('authorization'),
 	secretOrKey: secret
 };
-
-
-// Create JWT strategy
 const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
-	// See if the user ID in the payload exists in our database
-	// If it does, call 'done' with that other
-	// otherwise, call done without a user object
-
 	UserSchema.findById(payload.sub, function (err, user) {
 		if (err) { return done(err, false); }
 		if (user) {
@@ -50,6 +36,5 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
 	});
 });
 
-// Tell passport to use jwt/local strategy
 passport.use(jwtLogin);
 passport.use(localLogin);
