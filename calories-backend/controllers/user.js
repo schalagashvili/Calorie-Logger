@@ -7,9 +7,7 @@ const permissionLevel2 = ['admin', 'manager']
 
 export function addMealLog(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   if (userId != null) {
-    // check if the user who called it is really admin
     if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1)
       return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
@@ -23,9 +21,7 @@ export function addMealLog(req, res) {
 
 export function removeMealLog(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   if (userId != null) {
-    // check if the user who called it is really admin
     if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1)
       return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
@@ -39,9 +35,7 @@ export function removeMealLog(req, res) {
 
 export function editMealLog(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   if (userId != null) {
-    // check if the user who called it is really admin
     if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1)
       return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
@@ -55,9 +49,7 @@ export function editMealLog(req, res) {
 
 export function getMealLogs(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   let { fromDate, toDate, fromTime, toTime } = req.body
-  console.log(fromDate, toDate, fromTime, toTime)
   fromDate = new Date(fromDate)
   toDate = new Date(toDate)
   toDate = moment
@@ -71,25 +63,13 @@ export function getMealLogs(req, res) {
       mealLogs = user.mealLog
       mealLogs = mealLogs.filter(log => {
         const checkDate = new Date(log.date)
-        console.log(
-          'Checking top----------',
-          checkDate,
-          checkDate >= fromDate,
-          checkDate <= toDate,
-          checkDate,
-          toDate
-        )
         if (checkDate >= fromDate && checkDate <= toDate) {
-          console.log('Checking low------', checkDate)
           const time = moment.tz(checkDate, 'Asia/Tbilisi').format('HH:mm')
-          console.log('timeee', time >= fromTime, time <= toTime)
-          console.log(time, fromTime, toTime)
           if (time >= fromTime && time <= toTime) {
             return log
           }
         }
       })
-
       const pageCount = Math.ceil(mealLogs.length / 10)
       let page = parseInt(req.body.page)
       if (!page) {
@@ -98,8 +78,6 @@ export function getMealLogs(req, res) {
       if (page > pageCount) {
         page = pageCount
       }
-
-      console.log(mealLogs)
       return res
         .status(200)
         .send({ logs: mealLogs.slice(page * 10 - 10, page * 10), logsCount: mealLogs.length })
@@ -108,18 +86,8 @@ export function getMealLogs(req, res) {
     mealLogs = req.user.mealLog
     mealLogs = mealLogs.filter(log => {
       const checkDate = new Date(log.date)
-      console.log(
-        'Checking top----------',
-        checkDate,
-        checkDate >= fromDate,
-        checkDate <= toDate,
-        checkDate,
-        toDate
-      )
       if (checkDate >= fromDate && checkDate <= toDate) {
-        console.log('Checking low------', checkDate)
         const time = moment.tz(checkDate, 'Asia/Tbilisi').format('HH:mm')
-        console.log(time, fromTime, toTime)
         if (time >= fromTime && time <= toTime) {
           return log
         }
@@ -133,8 +101,6 @@ export function getMealLogs(req, res) {
     if (page > pageCount) {
       page = pageCount
     }
-
-    console.log(mealLogs)
     return res
       .status(200)
       .send({ logs: mealLogs.slice(page * 10 - 10, page * 10), logsCount: mealLogs.length })
@@ -143,9 +109,7 @@ export function getMealLogs(req, res) {
 
 export function getUser(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   if (userId != null) {
-    // check if the user who called it is really admin
     if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
       return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
@@ -159,10 +123,7 @@ export function getUser(req, res) {
 
 export function editUser(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   if (userId != null) {
-    // check if the user who called it is really admin
-    console.log(typeof req.user.role, permissionLevel2)
     if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
       return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
@@ -176,9 +137,7 @@ export function editUser(req, res) {
 
 export function deleteUser(req, res) {
   const userId = req.params.userId
-  // check if admin has called the route
   if (userId != null) {
-    // check if the user who called it is really admin
     if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
       return res.status(401).send()
     UserSchema.findByIdAndRemove({ _id: userId }, err => {
