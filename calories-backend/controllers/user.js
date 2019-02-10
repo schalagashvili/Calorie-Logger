@@ -82,6 +82,7 @@ export function getMealLogs(req, res) {
         if (checkDate >= fromDate && checkDate <= toDate) {
           console.log('Checking low------', checkDate)
           const time = moment.tz(checkDate, 'Asia/Tbilisi').format('HH:mm')
+          console.log('timeee', time >= fromTime, time <= toTime)
           console.log(time, fromTime, toTime)
           if (time >= fromTime && time <= toTime) {
             return log

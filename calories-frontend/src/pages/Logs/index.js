@@ -8,8 +8,28 @@ import BaseHeader from '../../components/BaseHeader'
 import { AuthConsumer } from '../../AuthContext'
 import config from '../../config'
 import { insertFunc } from '../../utility'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { addMealLog, editMealLog, getMealLogs } from '../../actions/mealLogs'
+import { getUser } from '../../actions/user'
 
-class Logs extends Component {
+const mapDispatchToProps = dispatch => {
+  return {
+    addMealLog: bindActionCreators(addMealLog, dispatch),
+    editMealLog: bindActionCreators(editMealLog, dispatch),
+    getMealLogs: bindActionCreators(getMealLogs, dispatch),
+    getUser: bindActionCreators(getUser, dispatch)
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    mealLogs: state.getMealLogs.data,
+    userInfo: state.user.data
+  }
+}
+
+class Logs2 extends Component {
   constructor(props) {
     super(props)
     const today = new Date().toISOString().substr(0, 10)
@@ -36,86 +56,69 @@ class Logs extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const token = this.props.token
     const userId = this.props.match.params.userId
     const { fromDate, toDate, fromTime, toTime, page } = this.state
-    axios
-      .get(`${config.apiUrl}/getUser/${userId != null ? userId : ''}`, {
-        headers: { authorization: token }
-      })
-      .then(response => {
-        this.setState({
-          expectedCalories: response.data.user.expectedCalories || 0,
-          email: response.data.user.email
-        })
-      })
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
-      headers: { authorization: token },
-      data: { fromDate, toDate, fromTime, toTime, page }
-    }).then(response => {
-      let totalCalories = 0
-      const mealLogs = response.data.logs
-      if (mealLogs != null) {
-        mealLogs.map(log => (totalCalories += log.calories))
-      }
-      this.setState({
-        mealLogs: mealLogs != null ? mealLogs.reverse() : [],
-        totalCalories,
-        logsCount: response.data.logsCount,
-        page: this.state.page + 1
-      })
+    await this.props.getUser(userId, token)
+
+    const user = this.props.userInfo.user
+    this.setState({
+      expectedCalories: user.expectedCalories || 0,
+      email: user.email
+    })
+
+    await this.props.getMealLogs(fromDate, toDate, fromTime, toTime, page, userId, token)
+
+    let totalCalories = 0
+    const mealLogs = this.props.mealLogs.logs
+    if (mealLogs != null) {
+      mealLogs.map(log => (totalCalories += log.calories))
+    }
+    this.setState({
+      mealLogs: mealLogs != null ? mealLogs.reverse() : [],
+      totalCalories,
+      logsCount: this.props.mealLogs.logsCount,
+      page: this.state.page + 1
     })
   }
 
-  loadMore = page => {
+  loadMore = async page => {
     const { fromDate, toDate, fromTime, toTime } = this.state
     const token = this.props.token
     const userId = this.props.match.params.userId
 
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
-      headers: { authorization: token },
-      data: { fromDate, toDate, fromTime, toTime, page }
-    }).then(response => {
-      let totalCalories = 0
-      const mealLogs = response.data.logs
-      if (mealLogs != null) {
-        mealLogs.map(log => (totalCalories += log.calories))
-      }
-      const mergedLogs = this.state.mealLogs.concat(mealLogs)
-      this.setState({
-        mealLogs: mergedLogs,
-        page: this.state.page + 1
-      })
+    await this.props.getMealLogs(fromDate, toDate, fromTime, toTime, page, userId, token)
+    let totalCalories = 0
+    const mealLogs = this.props.mealLogs.logs
+    if (mealLogs != null) {
+      mealLogs.map(log => (totalCalories += log.calories))
+    }
+    const mergedLogs = this.state.mealLogs.concat(mealLogs)
+    this.setState({
+      mealLogs: mergedLogs,
+      page: this.state.page + 1
     })
   }
 
-  onSearch = () => {
+  onSearch = async () => {
     const token = this.props.token
     const userId = this.props.match.params.userId
-    const { fromDate, toDate, fromTime, toTime } = this.state
+    console.log(userId)
+    const { fromDate, toDate, fromTime, toTime, page } = this.state
     this.setState({ searchLoading: true })
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
-      headers: { authorization: token },
-      data: { fromDate, toDate, fromTime, toTime }
-    }).then(response => {
-      let totalCalories = 0
-      const mealLogs = response.data.logs
-      if (mealLogs != null) {
-        mealLogs.map(log => (totalCalories += log.calories))
-      }
-      this.setState({
-        mealLogs: mealLogs != null ? mealLogs.reverse() : [],
-        totalCalories,
-        searchLoading: false,
-        logsCount: response.data.logsCount
-      })
+    await this.props.getMealLogs(fromDate, toDate, fromTime, toTime, page, userId, token)
+
+    let totalCalories = 0
+    const mealLogs = this.props.mealLogs.logs
+    if (mealLogs != null) {
+      mealLogs.map(log => (totalCalories += log.calories))
+    }
+    this.setState({
+      mealLogs: mealLogs != null ? mealLogs.reverse() : [],
+      totalCalories,
+      logsCount: this.props.mealLogs.logsCount,
+      page: 1
     })
   }
 
@@ -182,69 +185,55 @@ class Logs extends Component {
     this.setState({ addCalories: parseFloat(calories) })
   }
 
-  onSave = () => {
-    let { addDate, addTime, addTitle, addCalories, isAdd } = this.state
+  onSave = async () => {
+    let { addDate, addTime, addTitle, addCalories, isAdd, editId } = this.state
+    console.log(addTime, 'DRO')
     if (addTitle === '' || addCalories === '') {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
     }
+
     this.toggleDrawer('addBottom', false)
     this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '', saveError: null })
     const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
     const userId = this.props.match.params.userId
+    let mealLogs = this.state.mealLogs
+    let totalCalories = 0
     if (isAdd) {
-      axios({
-        method: 'post',
-        url: `${config.apiUrl}/addMealLog/${userId != null ? userId : ''}`,
-        headers: { authorization: this.props.token },
-        data: {
-          title: addTitle,
-          calories: addCalories,
-          date: datetime
-        }
-      }).then(response => {
-        const _id = response.data._id
-        let mealLogs = this.state.mealLogs
-        let totalCalories = 0
-        mealLogs = insertFunc(mealLogs, 0, {
-          title: addTitle,
-          calories: addCalories,
-          date: datetime,
-          _id
-        })
-        if (mealLogs != null) {
-          mealLogs.map(log => (totalCalories += log.calories))
-        }
-        const meals = mealLogs.slice(0, 9)
-        this.setState({ mealLogs: meals, totalCalories })
+      await this.props.addMealLog(addTitle, addCalories, datetime, this.props.token, userId)
+      mealLogs = insertFunc(mealLogs, 0, {
+        title: addTitle,
+        calories: addCalories,
+        date: datetime
       })
+      if (mealLogs != null) {
+        mealLogs.map(log => (totalCalories += log.calories))
+      }
+      const meals = mealLogs.slice(0, 9)
+      this.setState({ mealLogs: meals, totalCalories })
     } else {
-      axios({
-        method: 'post',
-        url: `${config.apiUrl}/editMealLog/${this.state.editId}/${userId != null ? userId : ''}`,
-        headers: { authorization: this.props.token },
-        data: {
-          title: addTitle,
-          calories: addCalories,
-          date: datetime
-        }
-      }).then(() => {
-        let mealLogs = this.state.mealLogs
-        let totalCalories = 0
-        const editedLogIndex = mealLogs.findIndex(log => log._id === this.state.editId)
-        if (editedLogIndex === -1) {
-          return
-        }
-        mealLogs[editedLogIndex] = {
-          _id: this.state.editId,
-          title: addTitle,
-          calories: addCalories,
-          date: datetime
-        }
-        if (mealLogs != null) {
-          mealLogs.map(log => (totalCalories += log.calories))
-        }
-        this.setState({ mealLogs, totalCalories })
-      })
+      await this.props.editMealLog(
+        addTitle,
+        addCalories,
+        datetime,
+        this.props.token,
+        userId,
+        editId
+      )
+
+      const editedLogIndex = mealLogs.findIndex(log => log._id === this.state.editId)
+      if (editedLogIndex === -1) {
+        return
+      }
+      mealLogs[editedLogIndex] = {
+        _id: this.state.editId,
+        title: addTitle,
+        calories: addCalories,
+        date: datetime
+      }
+      if (mealLogs != null) {
+        mealLogs.map(log => (totalCalories += log.calories))
+      }
+      this.setState({ mealLogs, totalCalories })
     }
   }
 
@@ -266,8 +255,6 @@ class Logs extends Component {
 
   onDelete = id => {
     const userId = this.props.match.params.userId
-    const token = this.props.token
-    const { fromDate, toDate, fromTime, toTime, page } = this.state
 
     axios({
       method: 'post',
@@ -281,25 +268,6 @@ class Logs extends Component {
         mealLogs.map(log => (totalCalories += log.calories))
       }
       this.setState({ mealLogs, totalCalories, logsCount: this.state.logsCount - 1 })
-    })
-    const logsPage = 1
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
-      headers: { authorization: token },
-      data: { fromDate, toDate, fromTime, toTime, logsPage }
-    }).then(response => {
-      let totalCalories = 0
-      const mealLogs = response.data.logs
-      if (mealLogs != null) {
-        mealLogs.map(log => (totalCalories += log.calories))
-      }
-      this.setState({
-        mealLogs: mealLogs != null ? mealLogs.reverse() : [],
-        totalCalories,
-        logsCount: response.data.logsCount,
-        page: 1
-      })
     })
   }
 
@@ -386,6 +354,7 @@ class Logs extends Component {
                       this.editOpenHandler(true)
                       this.toggleDrawer('addBottom', true)
                     }}
+                    // onClick={() => this.onSave()}
                   >
                     Add
                   </Button>
@@ -445,4 +414,8 @@ class Logs extends Component {
   }
 }
 
+const Logs = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Logs2)
 export default Logs

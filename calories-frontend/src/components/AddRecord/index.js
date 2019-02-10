@@ -20,9 +20,10 @@ class AddRecord extends Component {
       saveError,
       addCalories,
       saveErrorText,
-      onSave,
       toggleDrawer,
-      isEditMealShowing
+      isEditMealShowing,
+      token,
+      onSave
     } = this.props
 
     return (

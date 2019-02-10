@@ -3,12 +3,6 @@ export function validateEmail(email) {
   return re.test(email)
 }
 
-export function insertFunc (arr, index, newItem) {
-  return [
-  // part of the array before the specified index
-  ...arr.slice(0, index),
-  // inserted item
-  newItem,
-  // part of the array after the specified index
-  ...arr.slice(index)
-]}
+export function insertFunc(arr, index, newItem) {
+  return [...arr.slice(0, index), newItem, ...arr.slice(index)]
+}
