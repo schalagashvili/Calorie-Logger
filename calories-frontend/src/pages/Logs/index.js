@@ -1,35 +1,18 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import moment from 'moment-timezone'
 import { Wrapper, InnerWrapper, Records } from './styles'
 import { Button } from '../../styles/mixins'
-import { Filter, Record, Settings, AddRecord } from '../../components'
+import { Filter, Record, Settings, AddRecord, Header, TableHeader } from '../../components'
 import BaseHeader from '../../components/BaseHeader'
 import { AuthConsumer } from '../../AuthContext'
-import config from '../../config'
 import { insertFunc } from '../../utility'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { addMealLog, editMealLog, getMealLogs } from '../../actions/mealLogs'
-import { getUser } from '../../actions/user'
+import { addMealLog, editMealLog, getMealLogs, removeMealLog } from '../../actions/mealLogs'
+import { getUser, editUserCalories } from '../../actions/user'
 
-const mapDispatchToProps = dispatch => {
-  return {
-    addMealLog: bindActionCreators(addMealLog, dispatch),
-    editMealLog: bindActionCreators(editMealLog, dispatch),
-    getMealLogs: bindActionCreators(getMealLogs, dispatch),
-    getUser: bindActionCreators(getUser, dispatch)
-  }
-}
 
-const mapStateToProps = state => {
-  return {
-    mealLogs: state.getMealLogs.data,
-    userInfo: state.user.data
-  }
-}
-
-class Logs2 extends Component {
+class Logs extends Component {
   constructor(props) {
     super(props)
     const today = new Date().toISOString().substr(0, 10)
@@ -101,12 +84,12 @@ class Logs2 extends Component {
     })
   }
 
+
   onSearch = async () => {
     const token = this.props.token
     const userId = this.props.match.params.userId
     console.log(userId)
     const { fromDate, toDate, fromTime, toTime, page } = this.state
-    this.setState({ searchLoading: true })
     await this.props.getMealLogs(fromDate, toDate, fromTime, toTime, page, userId, token)
 
     let totalCalories = 0
@@ -151,18 +134,11 @@ class Logs2 extends Component {
   }
 
   updateExpectedCalories = () => {
-    this.setState({ updateLoading: true })
     const { expectedCalories } = this.state
     const token = this.props.token
     const userId = this.props.match.params.userId
-    axios({
-      method: 'put',
-      url: `${config.apiUrl}/editUser/${userId != null ? userId : ''}`,
-      headers: { authorization: token },
-      data: { expectedCalories }
-    }).then(() => {
-      this.setState({ updateLoading: false })
-    })
+
+    this.props.editUserCalories(userId, token, expectedCalories)
   }
 
   onAddDateChange = e => {
@@ -187,7 +163,6 @@ class Logs2 extends Component {
 
   onSave = async () => {
     let { addDate, addTime, addTitle, addCalories, isAdd, editId } = this.state
-    console.log(addTime, 'DRO')
     if (addTitle === '' || addCalories === '') {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
     }
@@ -253,14 +228,15 @@ class Logs2 extends Component {
     this.setState({ toTime: e.target.value })
   }
 
+  // stateModifier = (state, e) => {
+  //   this.setState({ [state]: e.target.value })
+  // }
+
   onDelete = id => {
     const userId = this.props.match.params.userId
 
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/removeMealLog/${id}/${userId != null ? userId : ''}`,
-      headers: { authorization: this.props.token }
-    }).then(() => {
+    this.props.removeMealLog(userId, this.props.token, id)
+    
       let mealLogs = this.state.mealLogs
       mealLogs = mealLogs.filter(log => log._id !== id)
       let totalCalories = 0
@@ -268,7 +244,6 @@ class Logs2 extends Component {
         mealLogs.map(log => (totalCalories += log.calories))
       }
       this.setState({ mealLogs, totalCalories, logsCount: this.state.logsCount - 1 })
-    })
   }
 
   renderRecords() {
@@ -334,6 +309,7 @@ class Logs2 extends Component {
               isAdd={this.state.isAdd}
               addTime={this.state.addTime}
               addDate={this.state.addDate}
+              stateModifier={this.stateModifier}
               onAddDateChange={this.onAddDateChange}
               onAddTimeChange={this.onAddTimeChange}
               addTitle={this.state.addTitle}
@@ -346,59 +322,9 @@ class Logs2 extends Component {
               toggleDrawer={this.toggleDrawer}
             />
             <InnerWrapper>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex' }}>
-                  <Button
-                    color='#5FBA7D'
-                    onClick={() => {
-                      this.editOpenHandler(true)
-                      this.toggleDrawer('addBottom', true)
-                    }}
-                    // onClick={() => this.onSave()}
-                  >
-                    Add
-                  </Button>
-                  <Button
-                    color='#2196f3'
-                    onClick={() => {
-                      this.toggleDrawer('filterBottom', true)
-                    }}
-                  >
-                    Filter
-                  </Button>
-                  <Button
-                    color='rgb(225, 0, 80)'
-                    onClick={() => {
-                      this.toggleDrawer('settingsBottom', true)
-                    }}
-                  >
-                    Settings
-                  </Button>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ fontSize: 13, color: 'grey' }}>
-                    Expected Calories: {this.state.expectedCalories}
-                  </div>
-                  <div style={{ fontSize: 13, color: 'grey', borderLeft: '1px solid grey' }}>
-                    Total: {this.state.totalCalories}
-                  </div>
-                </div>
-              </div>
+            <Header toggleDrawer={this.toggleDrawer} editOpenHandler={this.editOpenHandler} />
               <Records>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    fontSize: 12,
-                    color: 'grey',
-                    padding: '10px 137px 5px 45px'
-                  }}
-                >
-                  <div>Meal</div>
-                  <div>Calories</div>
-                  <div>Date</div>
-                  <div>Time</div>
-                </div>
+            <TableHeader />
                 {this.renderRecords()}
                 {this.state.logsCount > this.state.mealLogs.length && (
                   <Button onClick={() => this.loadMore(this.state.page)} color='lightGreen'>
@@ -414,8 +340,26 @@ class Logs2 extends Component {
   }
 }
 
-const Logs = connect(
+const mapDispatchToProps = dispatch => {
+  return {
+    getUser: bindActionCreators(getUser, dispatch),
+    getMealLogs: bindActionCreators(getMealLogs, dispatch),
+    addMealLog: bindActionCreators(addMealLog, dispatch),
+    editMealLog: bindActionCreators(editMealLog, dispatch),
+    removeMealLog:bindActionCreators(removeMealLog, dispatch),
+    editUserCalories:bindActionCreators(editUserCalories, dispatch)
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    mealLogs: state.mealLogs.data,
+    userInfo: state.user.data
+  }
+}
+
+const LogsComponent = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Logs2)
-export default Logs
+)(Logs)
+export default LogsComponent

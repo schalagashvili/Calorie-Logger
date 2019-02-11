@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Record, IconsWrapper } from './styles'
+import { Record, IconsWrapper, Title, Calories, DateText, Time, Icon } from './styles'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
@@ -29,23 +29,22 @@ class RecordItem extends Component {
         ) : (
           <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#91c653', marginRight: 15 }} />
         )}
-        <div style={{ flex: 1 }}>{title}</div>
-        <div style={{ flex: 1, color: '#8B93A6' }}>{calories} cal</div>
-        <div style={{ flex: 1 }}>{moment.tz(date, 'Asia/Tbilisi').format('MM/DD/YYYY')}</div>
-        <div style={{ flex: 0.7 }}>{moment.tz(date, 'Asia/Tbilisi').format('HH:mm')}</div>
-        <IconsWrapper style={{ flex: 0.2 }}>
-          <div
+        <Title>{title}</Title>
+        <Calories>{calories}</Calories>
+        <DateText>{moment.tz(date, 'Asia/Tbilisi').format('MM/DD/YYYY')}</DateText>
+        <Time>{moment.tz(date, 'Asia/Tbilisi').format('HH:mm')}</Time>
+        <IconsWrapper>
+          <Icon
             onClick={() => {
               editOpenHandler(false, id)
               toggleDrawer('addBottom', true)
             }}
-            style={{ cursor: 'pointer' }}
           >
             <EditIcon width={13} height={13} color='gray' />
-          </div>
-          <div onClick={() => onDelete(id)} style={{ cursor: 'pointer', marginLeft: 5 }}>
+          </Icon>
+          <Icon onClick={() => onDelete(id)}>
             <DeleteIcon width={11} height={11} color='red' />
-          </div>
+          </Icon>
         </IconsWrapper>
       </Record>
     )

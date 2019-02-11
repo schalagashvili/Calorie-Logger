@@ -4,6 +4,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { SaveErrorText } from '../../pages/SignUp/styles'
 import { DatePicker, TimePicker } from '../../components'
 import { Add, Container, InnerWrapper, RecordsHeader } from './styles'
+import { ButtonsWrapper } from '../Header/styles';
 
 class AddRecord extends Component {
   render() {
@@ -22,7 +23,6 @@ class AddRecord extends Component {
       saveErrorText,
       toggleDrawer,
       isEditMealShowing,
-      token,
       onSave
     } = this.props
 
@@ -42,17 +42,10 @@ class AddRecord extends Component {
                 type='number'
                 placeholder='Calories'
               />
-              <div style={{ display: 'flex' }}>
+              <div>
                 {saveError === 1 ? <SaveErrorText>{saveErrorText}</SaveErrorText> : null}
               </div>
-              <div
-                style={{
-                  marginLeft: 'auto',
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  width: 178
-                }}
-              >
+              <ButtonsWrapper>
                 <Button
                   onClick={() => {
                     onSave()
@@ -64,7 +57,7 @@ class AddRecord extends Component {
                 <Button onClick={() => toggleDrawer('addBottom', false)} color='grey'>
                   Cancel
                 </Button>
-              </div>
+              </ButtonsWrapper>
             </Container>
           </InnerWrapper>
         </Add>

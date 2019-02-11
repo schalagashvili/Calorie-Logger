@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
 import Spinner from 'react-spinkit'
-import axios from 'axios'
 import { Wrapper, LoginContainer, MailInput, InputWrapper, ErrorText } from './styles'
 import { validateEmail } from '../../utility'
 import logo from '../../assets/logos/brand-logo.png'
 import { Button } from '../../styles/mixins'
 import { EditIcon } from '../../assets/icons'
-import { apiUrl } from '../../config'
 import { AuthConsumer } from '../../AuthContext'
+import { userSignUp } from '../../actions/user'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
 
 class SignUp extends Component {
   state = {
@@ -54,7 +56,7 @@ class SignUp extends Component {
     }
   }
 
-  onSubmit(login) {
+  async onSubmit(login) {
     const { emailError, passwordError1, passwordError2 } = this.state
     if (emailError === 1 || passwordError1 === 1 || passwordError2 === 1) {
       return
@@ -64,25 +66,27 @@ class SignUp extends Component {
     }
     this.setState({ loading: true, submitError: 0, submitErrorText: '' })
     const outerThis = this
-    axios
-      .post(`${apiUrl}/signUp`, {
-        email: this.state.email,
-        password: this.state.password1
-      })
-      .then(function(response) {
-        outerThis.setState({ loading: false })
-        const token = response.data.token
-        const role = response.data.role
-        const email = response.data.email
-        login(role, token, email)
-      })
-      .catch(function(error) {
-        outerThis.setState({
-          loading: false,
-          submitError: 1,
-          submitErrorText: error.response.data.error
-        })
-      })
+    await this.props.userSignUp(this.state.email, this.state.password1)
+    console.log(this.props.currentUser, 'ქარენთ იუზერი')
+    // axios
+    //   .post(`${apiUrl}/signUp`, {
+    //     email: this.state.email,
+    //     password: this.state.password1
+    //   })
+    //   .then(function(response) {
+    //     outerThis.setState({ loading: false })
+    //     const token = response.data.token
+    //     const role = response.data.role
+    //     const email = response.data.email
+    //     login(role, token, email)
+    //   })
+    //   .catch(function(error) {
+    //     outerThis.setState({
+    //       loading: false,
+    //       submitError: 1,
+    //       submitErrorText: error.response.data.error
+    //     })
+    //   })
   }
 
   render() {
@@ -149,4 +153,20 @@ class SignUp extends Component {
   }
 }
 
-export default SignUp
+const mapDispatchToProps = dispatch => {
+  return {
+    addMealLog: bindActionCreators(userSignUp, dispatch),
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    currentUser: state.user.data
+  }
+}
+
+const SignUpComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SignUp)
+export default SignUpComponent

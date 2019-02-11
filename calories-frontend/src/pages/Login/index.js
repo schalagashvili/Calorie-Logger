@@ -1,24 +1,19 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import Spinner from 'react-spinkit'
 import { Link, Redirect } from 'react-router-dom'
 import {
   Wrapper,
   LoginContainer,
   MailInput,
   Register,
-  InputWrapper,
   ErrorText,
   StyledButton
 } from './styles'
-import logo from '../../assets/logos/brand-logo.png'
-import { EditIcon } from '../../assets/icons'
 import { validateEmail } from '../../utility'
-import { apiUrl } from '../../config'
-// import classNames from 'classnames'
-import TextField from '@material-ui/core/TextField'
 import { AuthConsumer } from '../../AuthContext'
 import { withStyles } from '@material-ui/core/styles'
+import { userLogin } from '../../actions/user'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 const styles = theme => ({
   container: {
@@ -71,35 +66,39 @@ class Login extends Component {
     }
   }
 
-  onSubmit(login) {
+  async onSubmit(login) {
     const { emailError, passwordError1 } = this.state
     if (emailError === 1 || passwordError1 === 1) {
       return
     }
     this.setState({ loading: true, submitError: 0, submitErrorText: '' })
     const outerThis = this
-    axios
-      .post(`${apiUrl}/signIn`, {
-        email: this.state.email,
-        password: this.state.password
-      })
-      .then(function(response) {
-        outerThis.setState({ loading: false })
-        const token = response.data.token
-        const role = response.data.role
-        const email = response.data.email
-        login(role, token, email)
-      })
-      .catch(function(error) {
-        outerThis.setState({
-          loading: false,
-          submitError: 1,
-          submitErrorText:
-            error.response.status === 401
-              ? 'Username and password dont match!'
-              : 'Server error occurred...'
-        })
-      })
+
+    await this.props.userLogin(this.state.email, this.state.password)
+    console.log(this.props.loggedUser, 'დალოგილი იუზერი')
+    
+  //   axios
+  //     .post(`${apiUrl}/signIn`, {
+  //       email: this.state.email,
+  //       password: this.state.password
+  //     })
+  //     .then(function(response) {
+  //       outerThis.setState({ loading: false })
+  //       const token = response.data.token
+  //       const role = response.data.role
+  //       const email = response.data.email
+  //       login(role, token, email)
+  //     })
+  //     .catch(function(error) {
+  //       outerThis.setState({
+  //         loading: false,
+  //         submitError: 1,
+  //         submitErrorText:
+  //           error.response.status === 401
+  //             ? 'Username and password dont match!'
+  //             : 'Server error occurred...'
+  //       })
+  //     })
   }
 
   handleChange = name => event => {
@@ -157,4 +156,22 @@ class Login extends Component {
   }
 }
 
-export default withStyles(styles)(Login)
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addMealLog: bindActionCreators(userLogin, dispatch),
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    loggedUser: state.data
+  }
+}
+
+const LoginWithStyles = withStyles(styles)(Login)
+const LoginComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoginWithStyles)
+export default LoginComponent

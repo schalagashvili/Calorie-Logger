@@ -5,7 +5,6 @@ import { Login, SignUp, Logs, Users } from './pages'
 import { AuthProvider } from './AuthContext'
 import ProtectedRoute from './ProtectedRoute'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faIgloo } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faIgloo)

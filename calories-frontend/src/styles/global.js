@@ -1,5 +1,4 @@
 import { injectGlobal } from 'styled-components'
-import fonts from './fonts'
 import Muli from '../assets/fonts/Muli-Regular.ttf'
 
 injectGlobal`

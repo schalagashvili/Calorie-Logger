@@ -4,7 +4,10 @@ import {
   ADD_RECORD_FAILED,
   GET_RECORDS_STARTED,
   GET_RECORDS_SUCCEEDED,
-  GET_RECORDS_FAILED
+  GET_RECORDS_FAILED,
+  REMOVE_MEAL_LOG_STARTED,
+  REMOVE_MEAL_LOG_SUCCEEDED,
+  REMOVE_MEAL_LOG_FAILED
 } from '../actionTypes'
 import { RSAA } from 'redux-api-middleware'
 import config from '../config'
@@ -71,23 +74,16 @@ export function getMealLogs(fromDate, toDate, fromTime, toTime, page, userId, to
   }
 }
 
-export function removeMealLog(fromDate, toDate, fromTime, toTime, page, userId, token) {
+export function removeMealLog(userId, token, id) {
   return async function(dispatch) {
     await dispatch({
       [RSAA]: {
-        endpoint: `${config.apiUrl}/getMealLogs/${userId != null ? userId : ''}`,
-        types: [GET_RECORDS_STARTED, GET_RECORDS_SUCCEEDED, GET_RECORDS_FAILED],
+        endpoint: `${config.apiUrl}/getMealLogs/${id}/${userId != null ? userId : ''}`,
+        types: [REMOVE_MEAL_LOG_STARTED, REMOVE_MEAL_LOG_SUCCEEDED, REMOVE_MEAL_LOG_FAILED],
         headers: {
           Authorization: token
         },
-        method: 'post',
-        body: JSON.stringify({
-          fromDate,
-          toDate,
-          fromTime,
-          toTime,
-          page
-        })
+        method: 'post'
       }
     })
   }

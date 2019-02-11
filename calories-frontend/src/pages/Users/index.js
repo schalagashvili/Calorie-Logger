@@ -1,35 +1,27 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import config from '../../config'
 import {
-  Header,
-  HeaderDecoration,
   Wrapper,
-  NavigationTab,
   Add,
   AddContainer,
   Button,
-  Title,
   InnerWrapper,
   Record,
   Records,
   IconsWrapper,
   RecordsHeader,
-  CaloriesInfo,
-  AddButton,
-  ButtonText,
   AddRecordButton
 } from './styles'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
-import { DatePicker, TimePicker } from '../../components'
 import { Input } from '../../styles/mixins'
-import logo from '../../assets/logos/brand-logo.png'
 import history from '../../history'
-import TweenLite from 'gsap'
 import { ErrorText } from '../SignUp/styles'
 import BaseHeader from '../../components/BaseHeader'
 import { validateEmail } from '../../utility'
 import { AuthConsumer } from '../../AuthContext'
+import { deleteUser, getAllUsers, editUser, addNewUser } from '../../actions/user'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
 
 class Home extends Component {
   state = {
@@ -43,65 +35,91 @@ class Home extends Component {
     viewId: null
   }
 
-  onAddNewUser() {
+  async onAddNewUser() {
     const { addEmail, addPassword, addRole } = this.state
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/createUser`,
-      headers: { authorization: this.props.token },
-      data: {
-        email: addEmail,
-        password: addPassword,
-        role: addRole
-      }
-    })
-      .then(response => {
-        const _id = response.data._id
-        let users = this.state.users
-        users.push({ _id, email: addEmail, role: addRole })
-        this.setState({
-          users,
-          addError: null,
-          addEmail: null,
-          addPassword: null,
-          addRole: 'regular'
-        })
-        this.addUserCloseHandler()
+
+    await this.props.addNewUser(addEmail, addPassword, addRole, this.props.token)
+    console.log(this.props.newUser, 'ახალი იუზერი')
+    if(this.props.newUser) {
+
+      const _id = this.props.newUser._id
+      let users = this.state.users
+      users.push({ _id, email: addEmail, role: addRole })
+      this.setState({
+        users,
+        addError: null,
+        addEmail: null,
+        addPassword: null,
+        addRole: 'regular'
       })
-      .catch(err => {
-        this.setState({ addError: err.response.data.error })
-      })
+      this.addUserCloseHandler()
+    } else {
+      console.log(this.props.addUserError, 'ლკჯფდსკფდ')
+        // this.setState({ addError: err.response.data.error })
+    }
+    // axios({
+    //   method: 'post',
+    //   url: `${config.apiUrl}/createUser`,
+    //   headers: { authorization: this.props.token },
+    //   data: {
+    //     email: addEmail,
+    //     password: addPassword,
+    //     role: addRole
+    //   }
+    // })
+    //   .then(response => {
+    //     const _id = response.data._id
+    //     let users = this.state.users
+    //     users.push({ _id, email: addEmail, role: addRole })
+    //     this.setState({
+    //       users,
+    //       addError: null,
+    //       addEmail: null,
+    //       addPassword: null,
+    //       addRole: 'regular'
+    //     })
+    //     this.addUserCloseHandler()
+    //   })
+    //   .catch(err => {
+    //     this.setState({ addError: err.response.data.error })
+    //   })
   }
 
   onEditUser() {
     const { viewRole, viewId, users, viewEmail } = this.state
-    axios({
-      method: 'post',
-      url: `${config.apiUrl}/editUser/${viewId}`,
-      headers: { authorization: this.props.token },
-      data: {
-        role: viewRole
-      }
-    }).then(response => {
+    // axios({
+    //   method: 'post',
+    //   url: `${config.apiUrl}/editUser/${viewId}`,
+    //   headers: { authorization: this.props.token },
+    //   data: {
+    //     role: viewRole
+    //   }
+    // }).then(response => {
+      this.props.editUser(viewId, this.props.token, viewRole)
+
       const targetIndex = users.findIndex(user => user._id === viewId)
       users[targetIndex] = { _id: viewId, email: viewEmail, role: viewRole }
       this.setState({ users, viewId: null, viewEmail: '', viewRole: 'regular' })
       this.editCloseHandler()
-    })
+    // })
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { token, role } = this.props
     if (role !== 'admin' && role !== 'manager') {
       history.push('/logs')
     } else {
-      axios
-        .get(`${config.apiUrl}/getAllUsers`, {
-          headers: { authorization: token }
-        })
-        .then(response => {
-          this.setState({ users: response.data.users || [] })
-        })
+    await this.props.getAllUsers(token)
+    
+    this.setState({ users: this.props.allUsers.users || [] })
+    
+    //   axios
+    //     .get(`${config.apiUrl}/getAllUsers`, {
+    //       headers: { authorization: token }
+    //     })
+    //     .then(response => {
+    //       this.setState({ users: response.data.users || [] })
+    //     })
     }
   }
 
@@ -127,48 +145,10 @@ class Home extends Component {
   }
 
   editOpenHandler = (isAdd, id, email, role) => {
-    const { isEditUserShowing } = this.state
-
-    if (!isEditUserShowing) {
-      TweenLite.to('#edit-user', 0.4, {
-        height: '360px',
-        borderBottom: '1px solid #dce0e0'
-      })
-    }
-
     this.setState({ isEditUserShowing: true, viewEmail: email, viewRole: role, viewId: id })
   }
 
-  editCloseHandler = () => {
-    const { isEditUserShowing } = this.state
 
-    if (isEditUserShowing) {
-      TweenLite.to('#edit-user', 0.4, { height: 0, borderBottom: 'none' })
-    }
-    this.setState({ isEditUserShowing: false })
-  }
-
-  addUserOpenHandler = () => {
-    const { isEditUserShowing } = this.state
-
-    if (!isEditUserShowing) {
-      TweenLite.to('#add-user', 0.4, {
-        height: '360px',
-        borderBottom: '1px solid #dce0e0'
-      })
-    }
-
-    this.setState({ isEditUserShowing: true })
-  }
-
-  addUserCloseHandler = () => {
-    const { isEditUserShowing } = this.state
-
-    if (isEditUserShowing) {
-      TweenLite.to('#add-user', 0.4, { height: 0, borderBottom: 'none' })
-    }
-    this.setState({ isEditUserShowing: false })
-  }
 
   onUserClick(id) {
     if (this.props.role === 'admin') {
@@ -209,15 +189,10 @@ class Home extends Component {
   }
 
   onDelete(id) {
-    axios({
-      method: 'delete',
-      url: `${config.apiUrl}/deleteUser/${id}`,
-      headers: { authorization: this.props.token }
-    }).then(() => {
+    this.props.deleteUser(id, this.props.token)
       let users = this.state.users
       users = users.filter(user => user._id !== id)
       this.setState({ users })
-    })
   }
 
   render() {
@@ -228,7 +203,6 @@ class Home extends Component {
         {({ isAuth, login, logout, email }) => (
           <Wrapper>
             <BaseHeader role={this.props.role} onLogout={logout} />
-            <HeaderDecoration>Users Management</HeaderDecoration>
             <Add id="add-user" isEditUserShowing={isEditUserShowing}>
               <InnerWrapper>
                 <AddContainer>
@@ -352,4 +326,27 @@ class Home extends Component {
   }
 }
 
-export default Home
+const mapDispatchToProps = dispatch => {
+  return {
+    addMealLog: bindActionCreators(deleteUser, dispatch),
+    getAllUsers: bindActionCreators(getAllUsers, dispatch),
+    editUser: bindActionCreators(editUser, dispatch),
+    addNewUser: bindActionCreators(addNewUser, dispatch)
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    mealLogs: state.mealLogs.data,
+    allUsers: state.user.data,
+    newUser: state.user.data,
+    addUserError: state.user.errors
+  }
+}
+
+const HomeComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home)
+export default HomeComponent
+

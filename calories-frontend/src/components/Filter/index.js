@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import Drawer from '@material-ui/core/Drawer'
 import { FilterWrapper } from './styles'
-import { Button } from '../../styles/mixins'
-import { DatePicker, TimePicker } from '../../components'
+import { Button, PickerWrapper } from '../../styles/mixins'
+import { DatePicker, TimePicker, Title } from '../../components'
 
 class Filter extends Component {
   render() {
@@ -22,9 +22,9 @@ class Filter extends Component {
 
     return (
       <Drawer anchor='bottom' open={filterBottom}>
-        <div style={{ margin: 'auto', marginTop: '20px' }}>Filter</div>
+        <Title>Filter</Title>
         <FilterWrapper>
-          <div style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}>
+          <PickerWrapper>
             <DatePicker
               date={fromDate}
               onChange={onFromDateChange}
@@ -32,8 +32,8 @@ class Filter extends Component {
               marginRight
             />
             <DatePicker date={toDate} onChange={onToDateChange} headerText='Date To' />
-          </div>
-          <div style={{ display: 'flex', margin: 15, flexWrap: 'wrap', flexDirection: 'column' }}>
+          </PickerWrapper>
+          <PickerWrapper>
             <TimePicker
               time={fromTime}
               onChange={onFromTimeChange}
@@ -41,7 +41,7 @@ class Filter extends Component {
               marginRight
             />
             <TimePicker time={toTime} onChange={onToTimeChange} headerText='Time To' />
-          </div>
+          </PickerWrapper>
           <Button
             onClick={() => {
               onSearch()

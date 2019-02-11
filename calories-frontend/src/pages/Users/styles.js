@@ -36,7 +36,6 @@ export const Add = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  height: 0;
   overflow: hidden;
   margin: 10px 0;
 `
