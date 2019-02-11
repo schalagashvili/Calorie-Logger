@@ -7,13 +7,13 @@
 }
 
 .MuiInputBase-input-32 {
-  font-family: QuicksandRegular !important;
+  font-family: Muli;
 }
 
-.MuiInputBase-root-22
-  .MuiFormControl-root-5
-  .MuiInputBase-inputType-35
-  .DatePickers-textField-4
-  .TimePickers-textField-40 {
+.MuiInputBase-input-136 {
+  font: none;
+}
+
+.MuiInputBase-root-22 .MuiFormControl-root-5 .MuiInputBase-inputType-35 .DatePickers-textField-4 .TimePickers-textField-40 {
   background-color: white;
 }

@@ -150,6 +150,27 @@ export default (state = {}, action) => {
         errors: action.payload,
         data: {}
       }
+    case EDIT_USER_CALORIES_STARTED:
+      console.log(action)
+      return {
+        loading: true,
+        errors: {},
+        data: {}
+      }
+    case EDIT_USER_CALORIES_SUCCEEDED:
+      console.log(action)
+      return {
+        loading: false,
+        errors: {},
+        data: action.payload
+      }
+    case EDIT_USER_CALORIES_FAILED:
+      console.log(action)
+      return {
+        loading: false,
+        errors: action.payload,
+        data: {}
+      }
   }
   return state
 }

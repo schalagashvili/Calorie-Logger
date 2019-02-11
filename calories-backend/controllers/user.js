@@ -8,8 +8,7 @@ const permissionLevel2 = ['admin', 'manager']
 export function addMealLog(req, res) {
   const userId = req.params.userId
   if (userId != null) {
-    if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1)
-      return res.status(401).send()
+    if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
       if (err) return res.status(404).send()
       return Utility.addMealLog(user, req, res)
@@ -22,8 +21,7 @@ export function addMealLog(req, res) {
 export function removeMealLog(req, res) {
   const userId = req.params.userId
   if (userId != null) {
-    if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1)
-      return res.status(401).send()
+    if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
       if (err) return res.status(404).send()
       return Utility.removeMealLog(user, req, res)
@@ -36,8 +34,7 @@ export function removeMealLog(req, res) {
 export function editMealLog(req, res) {
   const userId = req.params.userId
   if (userId != null) {
-    if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1)
-      return res.status(401).send()
+    if (permissionLevel1.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
       if (err) return res.status(404).send()
       return Utility.editMealLog(user, req, res)
@@ -78,9 +75,7 @@ export function getMealLogs(req, res) {
       if (page > pageCount) {
         page = pageCount
       }
-      return res
-        .status(200)
-        .send({ logs: mealLogs.slice(page * 10 - 10, page * 10), logsCount: mealLogs.length })
+      return res.status(200).send({ logs: mealLogs.slice(page * 10 - 10, page * 10), logsCount: mealLogs.length })
     })
   } else {
     mealLogs = req.user.mealLog
@@ -101,17 +96,14 @@ export function getMealLogs(req, res) {
     if (page > pageCount) {
       page = pageCount
     }
-    return res
-      .status(200)
-      .send({ logs: mealLogs.slice(page * 10 - 10, page * 10), logsCount: mealLogs.length })
+    return res.status(200).send({ logs: mealLogs.slice(page * 10 - 10, page * 10), logsCount: mealLogs.length })
   }
 }
 
 export function getUser(req, res) {
   const userId = req.params.userId
   if (userId != null) {
-    if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
-      return res.status(401).send()
+    if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
       if (err) return res.status(404).send()
       return Utility.getUser(user, req, res)
@@ -124,8 +116,7 @@ export function getUser(req, res) {
 export function editUser(req, res) {
   const userId = req.params.userId
   if (userId != null) {
-    if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
-      return res.status(401).send()
+    if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
     UserSchema.findOne({ _id: userId }, (err, user) => {
       if (err) return res.status(404).send()
       return Utility.editUser(user, req, res, true)
@@ -138,8 +129,7 @@ export function editUser(req, res) {
 export function deleteUser(req, res) {
   const userId = req.params.userId
   if (userId != null) {
-    if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
-      return res.status(401).send()
+    if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
     UserSchema.findByIdAndRemove({ _id: userId }, err => {
       if (err) return res.status(404).send()
       return res.status(200).send()
@@ -150,8 +140,7 @@ export function deleteUser(req, res) {
 }
 
 export function getAllUsers(req, res) {
-  if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1)
-    return res.status(401).send()
+  if (permissionLevel2.findIndex(elem => elem === req.user.role) === -1) return res.status(401).send()
   UserSchema.find({}, (err, users) => {
     if (err) return res.status(404).send()
     return res.status(200).send({ users })

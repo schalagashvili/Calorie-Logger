@@ -42,8 +42,9 @@ class Logs extends Component {
     await this.props.getUser(userId, token)
 
     const user = this.props.userInfo.user
+    console.log(user.expectedCalories)
     this.setState({
-      expectedCalories: user.expectedCalories || 0,
+      expectedCalories: user.expectedCalories,
       email: user.email
     })
 
@@ -267,7 +268,11 @@ class Logs extends Component {
               addCalories={this.state.addCalories}
             />
             <InnerWrapper>
-              <Header toggleDrawer={this.handleChange} editOpenHandler={this.editOpenHandler} />
+              <Header
+                toggleDrawer={this.handleChange}
+                editOpenHandler={this.editOpenHandler}
+                expectedCalories={this.state.expectedCalories}
+              />
               <Records>
                 <TableHeader />
                 {this.renderRecords()}
