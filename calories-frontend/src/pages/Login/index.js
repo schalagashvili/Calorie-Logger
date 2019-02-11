@@ -62,7 +62,7 @@ class Login extends Component {
       const role = user.role
       const email = user.email
       login(role, token, email)
-    } else if (this.props.errors) {
+    } else {
       const errorStatus = this.props.errors.status
 
       outerThis.setState({

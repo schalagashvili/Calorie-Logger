@@ -72,7 +72,7 @@ class SignUp extends Component {
       const role = user.role
       const email = this.state.email
       login(role, token, email)
-    } else if (this.props.errors) {
+    } else {
       const error = this.props.errors.response.error
 
       outerThis.setState({
