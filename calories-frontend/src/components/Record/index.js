@@ -7,25 +7,12 @@ import moment from 'moment-timezone'
 
 class RecordItem extends Component {
   render() {
-    const {
-      totalCalories,
-      expectedCalories,
-      calories,
-      title,
-      id,
-      editOpenHandler,
-      toggleDrawer,
-      onDelete,
-      date
-    } = this.props
+    const { totalCalories, expectedCalories, calories, title, id, editOpenHandler, handleChange, onDelete, date } = this.props
 
     return (
       <Record key={id}>
         {totalCalories > expectedCalories ? (
-          <FontAwesomeIcon
-            icon={faExclamationCircle}
-            style={{ color: 'rgb(225,0,80)', marginRight: 15 }}
-          />
+          <FontAwesomeIcon icon={faExclamationCircle} style={{ color: 'rgb(225,0,80)', marginRight: 15 }} />
         ) : (
           <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#91c653', marginRight: 15 }} />
         )}
@@ -37,7 +24,7 @@ class RecordItem extends Component {
           <Icon
             onClick={() => {
               editOpenHandler(false, id)
-              toggleDrawer('addBottom', true)
+              handleChange('addBottom', true)
             }}
           >
             <EditIcon width={13} height={13} color='gray' />

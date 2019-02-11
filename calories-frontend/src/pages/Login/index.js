@@ -1,36 +1,12 @@
 import React, { Component } from 'react'
 import { Link, Redirect } from 'react-router-dom'
-import {
-  Wrapper,
-  LoginContainer,
-  MailInput,
-  Register,
-  ErrorText,
-  StyledButton
-} from './styles'
+import { Wrapper, LoginContainer, InputField, Register, ErrorText, StyledButton } from './styles'
 import { validateEmail } from '../../utility'
 import { AuthConsumer } from '../../AuthContext'
-import { withStyles } from '@material-ui/core/styles'
 import { userLogin } from '../../actions/user'
+import { isEmpty } from 'lodash'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit
-  },
-  dense: {
-    marginTop: 16
-  },
-  menu: {
-    width: 200
-  }
-})
 
 class Login extends Component {
   state = {
@@ -38,8 +14,7 @@ class Login extends Component {
     password: '',
     passwordErrorText: '',
     emailErrorText: '',
-    submitError: '',
-    loading: false
+    submitError: ''
   }
 
   onEmailChange(e) {
@@ -68,37 +43,33 @@ class Login extends Component {
 
   async onSubmit(login) {
     const { emailError, passwordError1 } = this.state
+
+    if (this.state.password === '' || this.state.email === '') {
+      return this.setState({ submitError: 1, submitErrorText: 'Please fill fields' })
+    }
+
     if (emailError === 1 || passwordError1 === 1) {
       return
     }
-    this.setState({ loading: true, submitError: 0, submitErrorText: '' })
+    this.setState({ submitError: 0, submitErrorText: '' })
     const outerThis = this
 
     await this.props.userLogin(this.state.email, this.state.password)
-    console.log(this.props.loggedUser, 'დალოგილი იუზერი')
-    
-  //   axios
-  //     .post(`${apiUrl}/signIn`, {
-  //       email: this.state.email,
-  //       password: this.state.password
-  //     })
-  //     .then(function(response) {
-  //       outerThis.setState({ loading: false })
-  //       const token = response.data.token
-  //       const role = response.data.role
-  //       const email = response.data.email
-  //       login(role, token, email)
-  //     })
-  //     .catch(function(error) {
-  //       outerThis.setState({
-  //         loading: false,
-  //         submitError: 1,
-  //         submitErrorText:
-  //           error.response.status === 401
-  //             ? 'Username and password dont match!'
-  //             : 'Server error occurred...'
-  //       })
-  //     })
+    const user = this.props.loggedUser
+
+    if (!isEmpty(user)) {
+      const token = user.token
+      const role = user.role
+      const email = user.email
+      login(role, token, email)
+    } else if (this.props.errors) {
+      const errorStatus = this.props.errors.status
+
+      outerThis.setState({
+        submitError: 1,
+        submitErrorText: errorStatus === 401 ? 'Username and password dont match!' : 'Server error occurred...'
+      })
+    }
   }
 
   handleChange = name => event => {
@@ -108,7 +79,7 @@ class Login extends Component {
   }
 
   render() {
-    const { emailError, passwordError, submitError, passwordErrorText, submitErrorText , emailErrorText} = this.state
+    const { emailError, passwordError, submitError, passwordErrorText, submitErrorText, emailErrorText } = this.state
 
     return (
       <AuthConsumer>
@@ -123,15 +94,10 @@ class Login extends Component {
           return (
             <Wrapper>
               <LoginContainer>
-                <MailInput onChange={e => this.onEmailChange(e)} placeholder='E-Mail' />
+                <InputField onChange={e => this.onEmailChange(e)} placeholder='E-Mail' />
 
                 {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
-                <MailInput
-                  onChange={e => this.onPasswordChange(e)}
-                  type='password'
-                  placeholder='Password'
-                />
-                {/* ამას დივი უნდა ჰქონდეს თავისიი!!!! */}
+                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Password' />
                 {passwordError === 1 ? <ErrorText>{passwordErrorText}</ErrorText> : null}
                 {submitError === 1 ? <ErrorText>{submitErrorText}</ErrorText> : null}
                 <StyledButton onClick={() => this.onSubmit(login)}>Log In</StyledButton>
@@ -147,22 +113,21 @@ class Login extends Component {
   }
 }
 
-
 const mapDispatchToProps = dispatch => {
   return {
-    addMealLog: bindActionCreators(userLogin, dispatch),
+    userLogin: bindActionCreators(userLogin, dispatch)
   }
 }
 
 const mapStateToProps = state => {
   return {
-    loggedUser: state.data
+    loggedUser: state.user.data,
+    errors: state.user.errors
   }
 }
 
-const LoginWithStyles = withStyles(styles)(Login)
 const LoginComponent = connect(
   mapStateToProps,
   mapDispatchToProps
-)(LoginWithStyles)
+)(Login)
 export default LoginComponent

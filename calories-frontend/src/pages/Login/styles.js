@@ -18,7 +18,6 @@ export const ErrorText = styled.p`
   font-size: 12px;
   margin-top: 10px;
   background-color: transparent;
-  font-family: KrubRegular;
 `
 
 export const LoginContainer = styled.div`
@@ -33,7 +32,7 @@ export const LoginContainer = styled.div`
   justify-content: center;
 `
 
-export const MailInput = styled.input`
+export const InputField = styled.input`
   width: 300px;
   height: 55px;
   border: 1px solid #dce0e0;

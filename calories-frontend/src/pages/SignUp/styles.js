@@ -1,9 +1,10 @@
 import styled from 'styled-components'
-import colors from '../../styles/colors'
 import sizes from '../../styles/sizes'
+import bgImage from '../../assets/images/bgImage.jpg'
 
 export const Wrapper = styled.div`
-  background: ${colors.primaryBackground};
+  background-image: url(${bgImage});
+  background-size: cover;
   min-height: 100vh;
   height: 100%;
   display: flex;
@@ -16,37 +17,37 @@ export const ErrorText = styled.p`
   color: red;
   font-size: 15px;
   margin-top: 10px;
-  font-family: KrubRegular;
 `
 
 export const SaveErrorText = styled.span`
   color: red;
   font-size: 12px;
-  font-family: KrubRegular;
   margin-top: 10px;
 `
 
 export const LoginContainer = styled.div`
   width: 400px;
-  height: 500px;
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 0px 238px 14px rgba(5, 5, 5, 1);
   border-radius: ${sizes.borderRadius};
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-bottom: 25px;
 `
 
-export const MailInput = styled.input`
+export const InputField = styled.input`
   width: 300px;
   height: 55px;
   border: 1px solid #dce0e0;
-  border-radius: ${sizes.borderRadius};
-  background-color: white;
+  border-radius: 35px;
   outline: none;
-  padding: 10px 15px;
+  color: white;
+  padding: 10px 30px;
   font-size: 16px;
-  margin-top: 20px;
+  background-color: transparent;
+  margin-top: 30px;
 `
 
 export const Register = styled.div`

@@ -11,7 +11,6 @@ import { bindActionCreators } from 'redux'
 import { addMealLog, editMealLog, getMealLogs, removeMealLog } from '../../actions/record'
 import { getUser, editUserCalories } from '../../actions/user'
 
-
 class Logs extends Component {
   constructor(props) {
     super(props)
@@ -80,7 +79,6 @@ class Logs extends Component {
       page: this.state.page + 1
     })
   }
-
 
   onSearch = async () => {
     const token = this.props.token
@@ -153,8 +151,7 @@ class Logs extends Component {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
     }
 
-    this.handleChange('addBottom', false)
-    this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '', saveError: null })
+    this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '', saveError: null, addBottom: false })
     const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
     const userId = this.props.match.params.userId
     let mealLogs = this.state.mealLogs
@@ -172,14 +169,7 @@ class Logs extends Component {
       const meals = mealLogs.slice(0, 9)
       this.setState({ mealLogs: meals, totalCalories })
     } else {
-      await this.props.editMealLog(
-        addTitle,
-        addCalories,
-        datetime,
-        this.props.token,
-        userId,
-        editId
-      )
+      await this.props.editMealLog(addTitle, addCalories, datetime, this.props.token, userId, editId)
 
       const editedLogIndex = mealLogs.findIndex(log => log._id === editId)
       if (editedLogIndex === -1) {
@@ -206,14 +196,14 @@ class Logs extends Component {
     const userId = this.props.match.params.userId
 
     this.props.removeMealLog(userId, this.props.token, id)
-    
-      let mealLogs = this.state.mealLogs
-      mealLogs = mealLogs.filter(log => log._id !== id)
-      let totalCalories = 0
-      if (mealLogs != null) {
-        mealLogs.map(log => (totalCalories += log.calories))
-      }
-      this.setState({ mealLogs, totalCalories, logsCount: this.state.logsCount - 1 })
+
+    let mealLogs = this.state.mealLogs
+    mealLogs = mealLogs.filter(log => log._id !== id)
+    let totalCalories = 0
+    if (mealLogs != null) {
+      mealLogs.map(log => (totalCalories += log.calories))
+    }
+    this.setState({ mealLogs, totalCalories, logsCount: this.state.logsCount - 1 })
   }
 
   renderRecords() {
@@ -229,14 +219,13 @@ class Logs extends Component {
           title={title}
           id={_id}
           editOpenHandler={this.editOpenHandler}
-          toggleDrawer={this.toggleDrawer}
+          handleChange={this.handleChange}
           onDelete={this.onDelete}
           date={date}
         />
       )
     })
   }
-
 
   render() {
     const { settingsBottom, logsCount, mealLogs, page } = this.state
@@ -251,7 +240,7 @@ class Logs extends Component {
               onExpectedCaloriesChange={this.onExpectedCaloriesChange}
               dietBroken={dietBroken}
               expectedCalories={this.state.expectedCalories}
-              toggleDrawer={this.toggleDrawer}
+              handleChange={this.handleChange}
               totalCalories={this.state.totalCalories}
               settingsBottom={settingsBottom}
             />
@@ -278,9 +267,9 @@ class Logs extends Component {
               addCalories={this.state.addCalories}
             />
             <InnerWrapper>
-            <Header toggleDrawer={this.handleChange} editOpenHandler={this.editOpenHandler} />
+              <Header toggleDrawer={this.handleChange} editOpenHandler={this.editOpenHandler} />
               <Records>
-            <TableHeader />
+                <TableHeader />
                 {this.renderRecords()}
                 {logsCount > mealLogs.length && (
                   <Button onClick={() => this.loadMore(page)} color='lightGreen'>
@@ -302,8 +291,8 @@ const mapDispatchToProps = dispatch => {
     getMealLogs: bindActionCreators(getMealLogs, dispatch),
     addMealLog: bindActionCreators(addMealLog, dispatch),
     editMealLog: bindActionCreators(editMealLog, dispatch),
-    removeMealLog:bindActionCreators(removeMealLog, dispatch),
-    editUserCalories:bindActionCreators(editUserCalories, dispatch)
+    removeMealLog: bindActionCreators(removeMealLog, dispatch),
+    editUserCalories: bindActionCreators(editUserCalories, dispatch)
   }
 }
 

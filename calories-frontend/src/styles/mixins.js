@@ -4,7 +4,7 @@ import sizes from './sizes'
 
 export const Button = styled.div`
   background-color: ${props => props.color};
-  max-width: 100px;
+  max-width: 120px;
   padding: 8px 20px;
   color: white;
   height: 36px;

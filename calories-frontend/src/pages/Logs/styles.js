@@ -1,13 +1,9 @@
 import styled from 'styled-components'
 import colors from '../../styles/colors'
-import sizes, { tablet } from '../../styles/sizes'
-import bgImage from '../../assets/images/bgImage.jpg'
-// import Button from '@material-ui/core/Button'
+import sizes from '../../styles/sizes'
 
 export const Wrapper = styled.div`
-  /* background-image: url(${bgImage}); */
-  /* background-size: cover; */
-  background-color: #F5F6FA;
+  background-color: #f5f6fa;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -84,8 +80,7 @@ export const InnerWrapper = styled.div`
 export const Records = styled.div`
   display: flex;
   margin: 8px;
-  flex-direction: column; 
-  /* box-shadow: ${colors.primaryBoxShadow}; */
+  flex-direction: column;
   border-radius: ${sizes.borderRadius};
 `
 

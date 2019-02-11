@@ -1,15 +1,10 @@
 import React, { Component } from 'react'
 import { Button } from '../../styles/mixins'
-import {Wrapper, ButtonsWrapper, CalorieInfo} from './styles'
+import { Wrapper, ButtonsWrapper, CalorieInfo } from './styles'
 
 class Header extends Component {
   render() {
-    const {
-      totalCalories,
-      expectedCalories,
-      editOpenHandler,
-      toggleDrawer,
-    } = this.props
+    const { totalCalories, expectedCalories, editOpenHandler, toggleDrawer } = this.props
 
     return (
       <Wrapper>
@@ -41,12 +36,9 @@ class Header extends Component {
           </Button>
         </ButtonsWrapper>
         <CalorieInfo>
-          <div style={{ fontSize: 13, color: 'grey' }}>
-            Expected Calories: {expectedCalories}
-          </div>
-          <div style={{ fontSize: 13, color: 'grey', borderLeft: '1px solid grey' }}>
-            Total: {totalCalories}
-          </div>
+          <div>From date to date</div>
+          <div style={{ fontSize: 13, color: 'grey' }}>Expected Calories: {expectedCalories}</div>
+          <div style={{ fontSize: 13, color: 'grey', borderLeft: '1px solid grey' }}>Total: {totalCalories}</div>
         </CalorieInfo>
       </Wrapper>
     )

@@ -1,25 +1,22 @@
 import React, { Component } from 'react'
-import Spinner from 'react-spinkit'
-import { Wrapper, LoginContainer, MailInput, InputWrapper, ErrorText } from './styles'
+import { Wrapper, LoginContainer, InputField, InputWrapper, ErrorText } from './styles'
 import { validateEmail } from '../../utility'
-import { Button } from '../../styles/mixins'
-import { EditIcon } from '../../assets/icons'
+import { isEmpty } from 'lodash'
 import { AuthConsumer } from '../../AuthContext'
 import { userSignUp } from '../../actions/user'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-
+import { StyledButton } from '../Login/styles'
 
 class SignUp extends Component {
   state = {
     email: '',
     password1: '',
-    passwordErrorText1: '',
-    password2: '',
-    passwordErrorText2: '',
+    passwordError: '',
+    confirmPassword: '',
+    confirmPasswordError: '',
     emailErrorText: '',
-    submitError: '',
-    loading: false
+    submitError: ''
   }
 
   onEmailChange(e) {
@@ -35,11 +32,11 @@ class SignUp extends Component {
     const password = e.target.value
     if (password == null || password.length < 6) {
       this.setState({
-        passwordErrorText1: '* Password length should be 6 or more',
+        passwordError: '* Password length should be 6 or more',
         passwordError1: 1
       })
     } else {
-      this.setState({ password1: password, passwordErrorText1: '', passwordError1: 0 })
+      this.setState({ password1: password, passwordError: '', passwordError1: 0 })
     }
   }
 
@@ -47,102 +44,66 @@ class SignUp extends Component {
     const password = e.target.value
     if (password == null || password.length < 6) {
       this.setState({
-        passwordErrorText2: '* Password length should be 6 or more',
+        confirmPasswordError: '* Password length should be 6 or more',
         passwordError2: 1
       })
     } else {
-      this.setState({ password2: password, passwordErrorText2: '', passwordError2: 0 })
+      this.setState({ confirmPassword: password, confirmPasswordError: '', passwordError2: 0 })
     }
   }
 
   async onSubmit(login) {
     const { emailError, passwordError1, passwordError2 } = this.state
+    if (this.state.password1 === '' || this.state.confirmPassword === '' || this.state.email === '') {
+      return this.setState({ submitError: 1, submitErrorText: 'Please fill fields' })
+    }
     if (emailError === 1 || passwordError1 === 1 || passwordError2 === 1) {
       return
     }
-    if (this.state.password1 !== this.state.password2) {
+    if (this.state.password1 !== this.state.confirmPassword) {
       return this.setState({ submitErrorText: 'Passwords dont match!', submitError: 1 })
     }
-    this.setState({ loading: true, submitError: 0, submitErrorText: '' })
+    this.setState({ submitError: 0, submitErrorText: '' })
     const outerThis = this
     await this.props.userSignUp(this.state.email, this.state.password1)
-    console.log(this.props.currentUser, 'ქარენთ იუზერი')
-    // axios
-    //   .post(`${apiUrl}/signUp`, {
-    //     email: this.state.email,
-    //     password: this.state.password1
-    //   })
-    //   .then(function(response) {
-    //     outerThis.setState({ loading: false })
-    //     const token = response.data.token
-    //     const role = response.data.role
-    //     const email = response.data.email
-    //     login(role, token, email)
-    //   })
-    //   .catch(function(error) {
-    //     outerThis.setState({
-    //       loading: false,
-    //       submitError: 1,
-    //       submitErrorText: error.response.data.error
-    //     })
-    //   })
+    const user = this.props.currentUser
+    if (!isEmpty(user)) {
+      const token = user.token
+      const role = user.role
+      const email = this.state.email
+      login(role, token, email)
+    } else if (this.props.errors) {
+      const error = this.props.errors.response.error
+
+      outerThis.setState({
+        submitError: 1,
+        submitErrorText: error
+      })
+    }
   }
 
   render() {
-    const { emailError, passwordError1, passwordError2, submitError, passwordErrorText1, emailErrorText } = this.state
+    const { emailError, passwordError1, passwordError2, submitError, passwordError, emailErrorText } = this.state
     return (
       <AuthConsumer>
-        {({ isAuth, login }) => (
+        {({ login }) => (
           <Wrapper>
             <LoginContainer>
               <InputWrapper error={emailError}>
-                <MailInput
-                  onChange={e => this.onEmailChange(e)}
-                  type="email"
-                  placeholder="E-Mail"
-                />
-                <EditIcon
-                  width={20}
-                  height={20}
-                  color="gray"
-                  styles={{ position: 'absolute', right: 15, top: 35 }}
-                />
+                <InputField onChange={e => this.onEmailChange(e)} type='email' placeholder='E-Mail' />
               </InputWrapper>
               {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
               <InputWrapper error={passwordError1}>
-                <MailInput
-                  onChange={e => this.onPasswordChange(e)}
-                  type="password"
-                  placeholder="Enter password"
-                />
-                <EditIcon
-                  width={20}
-                  height={20}
-                  color="gray"
-                  styles={{ position: 'absolute', right: 15, top: 35 }}
-                />
+                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Enter password' />
               </InputWrapper>
-              {passwordError1 === 1 ? <ErrorText>{passwordErrorText1}</ErrorText> : null}
+              {passwordError1 === 1 ? <ErrorText>{passwordError}</ErrorText> : null}
               <InputWrapper error={passwordError2}>
-                <MailInput
-                  onChange={e => this.onRePasswordChange(e)}
-                  type="password"
-                  placeholder="Re-enter password"
-                />
-                <EditIcon
-                  width={20}
-                  height={20}
-                  color="gray"
-                  styles={{ position: 'absolute', right: 15, top: 35 }}
-                />
+                <InputField onChange={e => this.onRePasswordChange(e)} type='password' placeholder='Re-enter password' />
               </InputWrapper>
-              {passwordError2 === 1 ? <ErrorText>{this.state.passwordErrorText2}</ErrorText> : null}
+              {passwordError2 === 1 ? <ErrorText>{this.state.confirmPasswordError}</ErrorText> : null}
               {submitError === 1 ? <ErrorText>{this.state.submitErrorText}</ErrorText> : null}
-              {this.state.loading ? (
-                <Spinner fadeIn="none" style={{ marginTop: '20px' }} name="circle" />
-              ) : (
-                <Button onClick={() => this.onSubmit(login)}>Sign Up</Button>
-              )}
+              <StyledButton onClick={() => this.onSubmit(login)}>Sign Up</StyledButton>
+              <div>Login</div>
             </LoginContainer>
           </Wrapper>
         )}
@@ -153,13 +114,14 @@ class SignUp extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addMealLog: bindActionCreators(userSignUp, dispatch),
+    userSignUp: bindActionCreators(userSignUp, dispatch)
   }
 }
 
 const mapStateToProps = state => {
   return {
-    currentUser: state.user.data
+    currentUser: state.user.data,
+    errors: state.user.errors
   }
 }
 

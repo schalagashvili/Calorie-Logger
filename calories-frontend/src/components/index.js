@@ -7,15 +7,7 @@ import Record from './Record'
 import AddRecord from './AddRecord'
 import Header from './Header'
 import TableHeader from './TableHeader'
+import AddUser from './AddUser'
+import BaseHeader from './BaseHeader'
 
-export {
-  InputField,
-  DatePicker,
-  TimePicker,
-  Settings,
-  Filter,
-  Record,
-  AddRecord,
-  Header,
-  TableHeader
-}
+export { InputField, DatePicker, TimePicker, Settings, Filter, Record, AddRecord, Header, TableHeader, AddUser, BaseHeader }

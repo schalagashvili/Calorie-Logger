@@ -20,7 +20,6 @@ import {
   EDIT_USER_CALORIES_STARTED,
   EDIT_USER_CALORIES_SUCCEEDED,
   EDIT_USER_CALORIES_FAILED
-
 } from '../actionTypes'
 
 export default (state = {}, action) => {
@@ -40,6 +39,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case GET_USERS_FAILED:
+      console.log(action)
       return {
         loading: false,
         errors: action.payload,
@@ -60,6 +60,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case USER_LOGIN_FAILED:
+      console.log(action)
       return {
         loading: false,
         errors: action.payload,
@@ -80,6 +81,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case GET_ALL_USERS_FAILED:
+      console.log(action)
       return {
         loading: false,
         errors: action.payload,
@@ -100,6 +102,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case EDIT_USER_FAILED:
+      console.log(action)
       return {
         loading: false,
         errors: action.payload,
@@ -120,6 +123,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case ADD_NEW_USER_FAILED:
+      console.log(action)
       return {
         loading: false,
         errors: action.payload,
@@ -140,6 +144,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case SIGN_UP_USER_FAILED:
+      console.log(action)
       return {
         loading: false,
         errors: action.payload,

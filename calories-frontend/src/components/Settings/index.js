@@ -8,7 +8,7 @@ class Settings extends Component {
     const {
       onExpectedCaloriesChange,
       expectedCalories,
-      toggleDrawer,
+      handleChange,
       totalCalories,
       settingsBottom,
       dietBroken,
@@ -18,9 +18,7 @@ class Settings extends Component {
     return (
       <Drawer anchor='bottom' open={settingsBottom}>
         <CalorieSettings>
-          <ExpectedCalories>
-            Expected Calories:
-          </ExpectedCalories>
+          <ExpectedCalories>Expected Calories:</ExpectedCalories>
           <Input
             type='number'
             onChange={e => onExpectedCaloriesChange(e.target.value)}
@@ -30,21 +28,17 @@ class Settings extends Component {
           <Button
             onClick={() => {
               updateExpectedCalories()
-              toggleDrawer('settingsBottom', false)
+              handleChange('settingsBottom', false)
             }}
             color='#5FBA7D'
           >
             Update
           </Button>
-          <Button onClick={() => toggleDrawer('settingsBottom', false)} color='grey'>
+          <Button onClick={() => handleChange('settingsBottom', false)} color='grey'>
             Cancel
           </Button>
           <TotalWrapper>
-            Total calories :{' '}
-            <TotalCalories color={dietBroken ? 'red' : 'rgb(100, 196, 123)'}>
-              {' '}
-              {totalCalories}
-            </TotalCalories>
+            Total calories : <TotalCalories color={dietBroken ? 'red' : 'rgb(100, 196, 123)'}> {totalCalories}</TotalCalories>
           </TotalWrapper>
         </CalorieSettings>
       </Drawer>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Header } from '../../pages/Logs/styles'
 import history from '../../history'
+import { Button } from '../../styles/mixins'
 
 export default class BaseHeader extends React.Component {
   onLogout() {
@@ -12,14 +13,16 @@ export default class BaseHeader extends React.Component {
 
     return (
       <Header>
-        <div onClick={() => {
-          role === 'admin' || role === 'manager' ? history.push('/users') : history.push('logs')
-        }}>
-        Home
+        <div
+          onClick={() => {
+            role === 'admin' || role === 'manager' ? history.push('/users') : history.push('logs')
+          }}
+        >
+          Home
         </div>{' '}
-        <button onClick={() => this.onLogout()} logout color='rgba(0, 0, 0, 0.5)'>
+        <Button onClick={() => this.onLogout()} logout color='rgba(0, 0, 0, 0.5)'>
           Logout
-        </button> 
+        </Button>
       </Header>
     )
   }

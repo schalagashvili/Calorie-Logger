@@ -6,6 +6,9 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  background-color: #f5f6fa;
+  min-height: 100vh;
+  height: 100%;
 `
 
 export const Header = styled.div`
@@ -76,19 +79,22 @@ export const InnerWrapper = styled.div`
 `
 
 export const Record = styled.div`
-  border-top: 1px solid #dce0e0;
   display: flex;
   padding: 15px;
+  margin-top: 10px;
   background-color: white;
+  color: black;
   justify-content: space-between;
+  border-radius: 4px;
+  &:hover {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.18);
+  }
 `
 
 export const Records = styled.div`
   display: flex;
-  margin: 20px;
-  background-color: white;
+  margin: 8px;
   flex-direction: column;
-  box-shadow: ${colors.primaryBoxShadow};
   border-radius: ${sizes.borderRadius};
 `
 
