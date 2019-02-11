@@ -9,7 +9,9 @@ import {
   Records,
   IconsWrapper,
   RecordsHeader,
-  AddRecordButton
+  AddRecordButton,
+  Role,
+  Buttons
 } from './styles'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
 import { Input } from '../../styles/mixins'
@@ -87,6 +89,7 @@ class Home extends Component {
 
   onEditUser() {
     const { viewRole, viewId, users, viewEmail } = this.state
+    const token = this.props.token
     // axios({
     //   method: 'post',
     //   url: `${config.apiUrl}/editUser/${viewId}`,
@@ -95,7 +98,7 @@ class Home extends Component {
     //     role: viewRole
     //   }
     // }).then(response => {
-      this.props.editUser(viewId, this.props.token, viewRole)
+      this.props.editUser(viewId, token, viewRole)
 
       const targetIndex = users.findIndex(user => user._id === viewId)
       users[targetIndex] = { _id: viewId, email: viewEmail, role: viewRole }
@@ -200,7 +203,7 @@ class Home extends Component {
 
     return (
       <AuthConsumer>
-        {({ isAuth, login, logout, email }) => (
+        {({ logout, email }) => (
           <Wrapper>
             <BaseHeader role={this.props.role} onLogout={logout} />
             <Add id="add-user" isEditUserShowing={isEditUserShowing}>
@@ -220,7 +223,7 @@ class Home extends Component {
                     <ErrorText>{this.state.passwordErrorText}</ErrorText>
                   ) : null}
                   {this.props.role === 'admin' ? (
-                    <div style={{ width: '50%', marginTop: '20px' }}>
+                    <Role>
                       <span>Role: </span>
                       <select
                         value={this.state.addRole || 'regular'}
@@ -230,9 +233,9 @@ class Home extends Component {
                         <option value="manager">Manager</option>
                         <option value="admin">Admin</option>
                       </select>
-                    </div>
+                    </Role>
                   ) : (
-                      <div style={{ width: '50%', marginTop: '20px' }}>
+                      <Role>
                         <span>Role: </span>
                         <select
                           value={this.state.addRole || 'regular'}
@@ -241,24 +244,17 @@ class Home extends Component {
                           <option value="regular">Regular</option>
                           <option value="manager">Manager</option>
                         </select>
-                      </div>
+                      </Role>
                     )}
                   {this.state.addError != null ? (
                     <ErrorText>{this.state.addError}</ErrorText>
                   ) : null}
-                  <div
-                    style={{
-                      marginLeft: 'auto',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      width: 140
-                    }}
-                  >
+                  <Buttons>
                     <div onClick={this.addUserCloseHandler} style={{ cursor: 'pointer' }}>
                       Close
                     </div>
                     <Button onClick={() => this.onAddNewUser()}>Save</Button>
-                  </div>
+                  </Buttons>
                 </AddContainer>
               </InnerWrapper>
             </Add>
@@ -273,7 +269,7 @@ class Home extends Component {
                     type="email"
                   />
                   {this.props.role === 'admin' ? (
-                    <div style={{ width: '50%', marginTop: '20px' }}>
+                    <Role>
                       <span>Role: </span>
                       <select
                         value={this.state.viewRole || 'regular'}
@@ -283,9 +279,9 @@ class Home extends Component {
                         <option value="manager">Manager</option>
                         <option value="admin">Admin</option>
                       </select>
-                    </div>
+                    </Role>
                   ) : (
-                      <div style={{ width: '50%', marginTop: '20px' }}>
+                      <Role>
                         <span>Role: </span>
                         <select
                           value={this.state.viewRole || 'regular'}
@@ -294,21 +290,14 @@ class Home extends Component {
                           <option value="regular">Regular</option>
                           <option value="manager">Manager</option>
                         </select>
-                      </div>
+                      </Role>
                     )}
-                  <div
-                    style={{
-                      marginLeft: 'auto',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      width: 140
-                    }}
-                  >
+                  <Buttons>
                     <div onClick={this.editCloseHandler} style={{ cursor: 'pointer' }}>
                       Close
                     </div>
                     <Button onClick={() => this.onEditUser()}>Save</Button>
-                  </div>
+                  </Buttons>
                 </AddContainer>
               </InnerWrapper>
             </Add>
@@ -337,7 +326,7 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    mealLogs: state.mealLogs.data,
+    mealLogs: state.record.data,
     allUsers: state.user.data,
     newUser: state.user.data,
     addUserError: state.user.errors

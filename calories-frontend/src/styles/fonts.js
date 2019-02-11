@@ -1,9 +1,9 @@
 const fonts = {
   types: {
-    light: `QuicksandRegular, Roboto, Sans-Serif`,
-    regular: `QuicksandRegular, Roboto, Sans-Serif`,
-    bold: `QuicksandRegular, Halvetica`,
-    italic: `QuicksandRegular, Roboto, Sans-Serif`
+    light: `Muli, Roboto, Sans-Serif`,
+    regular: `Muli, Roboto, Sans-Serif`,
+    bold: `Muli, Halvetica`,
+    italic: `Muli, Roboto, Sans-Serif`
   },
 
   sizes: {

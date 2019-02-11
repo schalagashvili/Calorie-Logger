@@ -108,10 +108,7 @@ class Login extends Component {
   }
 
   render() {
-    const { emailError, passwordError, submitError } = this.state
-    const { classes } = this.props
-
-    console.log(classes)
+    const { emailError, passwordError, submitError, passwordErrorText, submitErrorText , emailErrorText} = this.state
 
     return (
       <AuthConsumer>
@@ -126,23 +123,17 @@ class Login extends Component {
           return (
             <Wrapper>
               <LoginContainer>
-                {/* <img src={logo} alt="logo" style={{ width: 200 }} /> */}
-
                 <MailInput onChange={e => this.onEmailChange(e)} placeholder='E-Mail' />
 
-                {emailError === 1 ? <ErrorText>{this.state.emailErrorText}</ErrorText> : null}
+                {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
                 <MailInput
                   onChange={e => this.onPasswordChange(e)}
                   type='password'
                   placeholder='Password'
                 />
                 {/* ამას დივი უნდა ჰქონდეს თავისიი!!!! */}
-                {passwordError === 1 ? <ErrorText>{this.state.passwordErrorText}</ErrorText> : null}
-                {submitError === 1 ? <ErrorText>{this.state.submitErrorText}</ErrorText> : null}
-                {/* {this.state.loading ? (
-                  <Spinner fadeIn="none" style={{ marginTop: '20px', backgroundColor: 'transparent' }} name="circle" />
-                ) : (
-                  )} */}
+                {passwordError === 1 ? <ErrorText>{passwordErrorText}</ErrorText> : null}
+                {submitError === 1 ? <ErrorText>{submitErrorText}</ErrorText> : null}
                 <StyledButton onClick={() => this.onSubmit(login)}>Log In</StyledButton>
                 <Link to='/signup' style={{ backgroundColor: 'transparent' }}>
                   <Register>Sign Up</Register>

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import colors from '../../styles/colors'
-import sizes, { tablet } from '../../styles/sizes'
+import sizes from '../../styles/sizes'
 
 export const Wrapper = styled.div`
   display: flex;
@@ -100,20 +100,6 @@ export const IconsWrapper = styled.div`
 
 export const RecordsHeader = styled.div`
   font-size: 18px;
-  text-transform: capitalize;
-  text-transform: uppercase;
-  color: #193466;
-  background: -moz-linear-gradient(left, rgba(4, 45, 107, 1) 0%, rgba(139, 52, 120, 1) 100%);
-  background: -webkit-linear-gradient(left, rgba(4, 45, 107, 1) 0%, rgba(139, 52, 120, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#042d6b', endColorstr='#8b3478',GradientType=1 );
-  -webkit-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#042d6b', endColorstr='#8b3478',GradientType=1 );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-  align-self: baseline;
-  -ms-flex-item-align: baseline;
-  -webkit-align-self: baseline;
-  margin: 10px;
   font-weight: 600;
 `
 
@@ -148,4 +134,16 @@ export const AddRecordButton = styled.div`
   justify-content: center;
   cursor: pointer;
   border-radius: ${sizes.buttonBorderRadius};
+`
+
+export const Role = styled.div`
+  width: 50%;
+  margin-top: 20px;
+`
+
+export const Buttons = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  width: 140px;
 `

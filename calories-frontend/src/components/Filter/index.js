@@ -1,21 +1,17 @@
 import React, { Component } from 'react'
 import Drawer from '@material-ui/core/Drawer'
-import { FilterWrapper } from './styles'
-import { Button, PickerWrapper } from '../../styles/mixins'
-import { DatePicker, TimePicker, Title } from '../../components'
+import { FilterWrapper, PickerWrapper, Title } from './styles'
+import { Button  } from '../../styles/mixins'
+import { DatePicker, TimePicker  } from '../../components'
 
 class Filter extends Component {
   render() {
     const {
       onSearch,
-      toggleDrawer,
       filterBottom,
       fromDate,
       toDate,
-      onFromDateChange,
-      onToDateChange,
-      onFromTimeChange,
-      onToTimeChange,
+      handleChange,
       fromTime,
       toTime
     } = this.props
@@ -27,31 +23,31 @@ class Filter extends Component {
           <PickerWrapper>
             <DatePicker
               date={fromDate}
-              onChange={onFromDateChange}
+              onChange={(e) => handleChange('fromDate', e.target.value)}
               headerText='Date From'
               marginRight
             />
-            <DatePicker date={toDate} onChange={onToDateChange} headerText='Date To' />
+            <DatePicker date={toDate} onChange={(e) => handleChange('toDate', e.target.value)} headerText='Date To' />
           </PickerWrapper>
           <PickerWrapper>
             <TimePicker
               time={fromTime}
-              onChange={onFromTimeChange}
+              onChange={(e) => handleChange('fromTime', e.target.value)}
               headerText='Time From'
               marginRight
             />
-            <TimePicker time={toTime} onChange={onToTimeChange} headerText='Time To' />
+            <TimePicker time={toTime} onChange={(e) => handleChange('toTime', e.target.value)} headerText='Time To' />
           </PickerWrapper>
           <Button
             onClick={() => {
               onSearch()
-              toggleDrawer('filterBottom', false)
+              handleChange('filterBottom', false)
             }}
             color='rgb(225, 0, 80)'
           >
             Search
           </Button>
-          <Button onClick={() => toggleDrawer('filterBottom', false)} color='grey'>
+          <Button onClick={() => handleChange('filterBottom', false)} color='grey'>
             Cancel
           </Button>
         </FilterWrapper>

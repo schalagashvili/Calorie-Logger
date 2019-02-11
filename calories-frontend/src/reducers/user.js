@@ -5,10 +5,21 @@ import {
   USER_LOGIN_STARTED,
   USER_LOGIN_SUCCEEDED,
   USER_LOGIN_FAILED,
-  GET_ALL_USERS_STARTED, GET_ALL_USERS_SUCCEEDED, GET_ALL_USERS_FAILED,
-  EDIT_USER_STARTED, EDIT_USER_SUCCEEDED, EDIT_USER_FAILED,
-  ADD_NEW_USER_STARTED, ADD_NEW_USER_SUCCEEDED, ADD_NEW_USER_FAILED,
-SIGN_UP_USER_STARTED, SIGN_UP_USER_SUCCEEDED, SIGN_UP_USER_FAILED
+  GET_ALL_USERS_STARTED,
+  GET_ALL_USERS_SUCCEEDED,
+  GET_ALL_USERS_FAILED,
+  EDIT_USER_STARTED,
+  EDIT_USER_SUCCEEDED,
+  EDIT_USER_FAILED,
+  ADD_NEW_USER_STARTED,
+  ADD_NEW_USER_SUCCEEDED,
+  ADD_NEW_USER_FAILED,
+  SIGN_UP_USER_STARTED,
+  SIGN_UP_USER_SUCCEEDED,
+  SIGN_UP_USER_FAILED,
+  EDIT_USER_CALORIES_STARTED,
+  EDIT_USER_CALORIES_SUCCEEDED,
+  EDIT_USER_CALORIES_FAILED
 
 } from '../actionTypes'
 
@@ -54,7 +65,7 @@ export default (state = {}, action) => {
         errors: action.payload,
         data: {}
       }
-      case GET_ALL_USERS_STARTED:
+    case GET_ALL_USERS_STARTED:
       console.log(action)
       return {
         loading: true,
@@ -74,7 +85,7 @@ export default (state = {}, action) => {
         errors: action.payload,
         data: {}
       }
-      case EDIT_USER_STARTED:
+    case EDIT_USER_STARTED:
       console.log(action)
       return {
         loading: true,
@@ -94,7 +105,7 @@ export default (state = {}, action) => {
         errors: action.payload,
         data: {}
       }
-      case ADD_NEW_USER_STARTED:
+    case ADD_NEW_USER_STARTED:
       console.log(action)
       return {
         loading: true,
@@ -114,7 +125,7 @@ export default (state = {}, action) => {
         errors: action.payload,
         data: {}
       }
-      case SIGN_UP_USER_STARTED:
+    case SIGN_UP_USER_STARTED:
       console.log(action)
       return {
         loading: true,

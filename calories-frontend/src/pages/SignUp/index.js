@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import Spinner from 'react-spinkit'
 import { Wrapper, LoginContainer, MailInput, InputWrapper, ErrorText } from './styles'
 import { validateEmail } from '../../utility'
-import logo from '../../assets/logos/brand-logo.png'
 import { Button } from '../../styles/mixins'
 import { EditIcon } from '../../assets/icons'
 import { AuthConsumer } from '../../AuthContext'
@@ -90,13 +89,12 @@ class SignUp extends Component {
   }
 
   render() {
-    const { emailError, passwordError1, passwordError2, submitError } = this.state
+    const { emailError, passwordError1, passwordError2, submitError, passwordErrorText1, emailErrorText } = this.state
     return (
       <AuthConsumer>
         {({ isAuth, login }) => (
           <Wrapper>
             <LoginContainer>
-              <img src={logo} alt="logo" style={{ width: 200 }} />
               <InputWrapper error={emailError}>
                 <MailInput
                   onChange={e => this.onEmailChange(e)}
@@ -110,7 +108,7 @@ class SignUp extends Component {
                   styles={{ position: 'absolute', right: 15, top: 35 }}
                 />
               </InputWrapper>
-              {emailError === 1 ? <ErrorText>{this.state.emailErrorText}</ErrorText> : null}
+              {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
               <InputWrapper error={passwordError1}>
                 <MailInput
                   onChange={e => this.onPasswordChange(e)}
@@ -124,7 +122,7 @@ class SignUp extends Component {
                   styles={{ position: 'absolute', right: 15, top: 35 }}
                 />
               </InputWrapper>
-              {passwordError1 === 1 ? <ErrorText>{this.state.passwordErrorText1}</ErrorText> : null}
+              {passwordError1 === 1 ? <ErrorText>{passwordErrorText1}</ErrorText> : null}
               <InputWrapper error={passwordError2}>
                 <MailInput
                   onChange={e => this.onRePasswordChange(e)}

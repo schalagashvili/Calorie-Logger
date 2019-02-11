@@ -38,3 +38,10 @@ export const RecordsHeader = styled.div`
   color: black;
   font-weight: 600;
 `
+
+export const ButtonsWrapper = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  width: 178px;
+`

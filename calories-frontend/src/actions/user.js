@@ -19,7 +19,10 @@ import {
   ADD_NEW_USER_FAILED,
   SIGN_UP_USER_STARTED,
   SIGN_UP_USER_SUCCEEDED,
-  SIGN_UP_USER_FAILED
+  SIGN_UP_USER_FAILED,
+  EDIT_USER_CALORIES_STARTED,
+  EDIT_USER_CALORIES_SUCCEEDED,
+  EDIT_USER_CALORIES_FAILED
 } from '../actionTypes'
 import {
   RSAA
@@ -47,7 +50,7 @@ export function editUserCalories(userId, token, expectedCalories) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/editUser/${userId != null ? userId : ''}`,
-        types: [GET_USER_STARTED, GET_USER_SUCCEEDED, GET_USERS_FAILED],
+        types: [EDIT_USER_CALORIES_STARTED, EDIT_USER_CALORIES_SUCCEEDED, EDIT_USER_CALORIES_FAILED],
         headers: {
           Authorization: token
         },

@@ -1,2 +1,2 @@
-export { default as mealLogs } from './mealLogs'
+export { default as record } from './record'
 export { default as user } from './user'

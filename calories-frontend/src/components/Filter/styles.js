@@ -11,3 +11,15 @@ export const FilterWrapper = styled.div`
   justify-content: center;
   align-items: center;
 `
+
+export const PickerWrapper = styled.div`
+  display: flex;
+  margin: 15;
+  flex-wrap: wrap;
+  flex-direction: column;
+`
+
+export const Title = styled.div`
+  margin: auto;
+  margin-top: 20px;
+`

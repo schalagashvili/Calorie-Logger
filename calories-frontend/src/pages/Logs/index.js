@@ -8,7 +8,7 @@ import { AuthConsumer } from '../../AuthContext'
 import { insertFunc } from '../../utility'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { addMealLog, editMealLog, getMealLogs, removeMealLog } from '../../actions/mealLogs'
+import { addMealLog, editMealLog, getMealLogs, removeMealLog } from '../../actions/record'
 import { getUser, editUserCalories } from '../../actions/user'
 
 
@@ -17,11 +17,8 @@ class Logs extends Component {
     super(props)
     const today = new Date().toISOString().substr(0, 10)
     this.state = {
-      isEditMealShowing: false,
       expectedCalories: 0,
       totalCalories: 0,
-      updateLoading: false,
-      searchLoading: false,
       mealLogs: [],
       fromDate: today,
       addBottom: false,
@@ -109,14 +106,13 @@ class Logs extends Component {
     if (isAdd) {
       const addDate = new Date().toISOString().substr(0, 10)
       const addTime = new Date().toTimeString().substr(0, 5)
-      this.setState({ isEditMealShowing: true, isAdd, addDate, addTime })
+      this.setState({ isAdd, addDate, addTime })
     } else {
       const editLog = this.state.mealLogs.filter(log => log._id === id)[0]
       const addDate = new Date(editLog.date).toISOString().substr(0, 10)
       const addTime = new Date(editLog.date).toTimeString().substr(0, 5)
       this.setState({
         editId: id,
-        isEditMealShowing: true,
         isAdd,
         addDate,
         addTime,
@@ -141,18 +137,6 @@ class Logs extends Component {
     this.props.editUserCalories(userId, token, expectedCalories)
   }
 
-  onAddDateChange = e => {
-    this.setState({ addDate: e.target.value })
-  }
-
-  onAddTimeChange = e => {
-    this.setState({ addTime: e.target.value })
-  }
-
-  onAddTitleChange = e => {
-    this.setState({ addTitle: e.target.value })
-  }
-
   onAddCaloriesChange = e => {
     let calories = e.target.value
     if (calories < 0) {
@@ -163,18 +147,20 @@ class Logs extends Component {
 
   onSave = async () => {
     let { addDate, addTime, addTitle, addCalories, isAdd, editId } = this.state
+    const token = this.props.token
+
     if (addTitle === '' || addCalories === '') {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
     }
 
-    this.toggleDrawer('addBottom', false)
+    this.handleChange('addBottom', false)
     this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '', saveError: null })
     const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
     const userId = this.props.match.params.userId
     let mealLogs = this.state.mealLogs
     let totalCalories = 0
     if (isAdd) {
-      await this.props.addMealLog(addTitle, addCalories, datetime, this.props.token, userId)
+      await this.props.addMealLog(addTitle, addCalories, datetime, token, userId)
       mealLogs = insertFunc(mealLogs, 0, {
         title: addTitle,
         calories: addCalories,
@@ -195,7 +181,7 @@ class Logs extends Component {
         editId
       )
 
-      const editedLogIndex = mealLogs.findIndex(log => log._id === this.state.editId)
+      const editedLogIndex = mealLogs.findIndex(log => log._id === editId)
       if (editedLogIndex === -1) {
         return
       }
@@ -212,25 +198,9 @@ class Logs extends Component {
     }
   }
 
-  onFromDateChange = e => {
-    this.setState({ fromDate: e.target.value })
+  handleChange = (state, value) => {
+    this.setState({ [state]: value })
   }
-
-  onToDateChange = e => {
-    this.setState({ toDate: e.target.value })
-  }
-
-  onFromTimeChange = e => {
-    this.setState({ fromTime: e.target.value })
-  }
-
-  onToTimeChange = e => {
-    this.setState({ toTime: e.target.value })
-  }
-
-  // stateModifier = (state, e) => {
-  //   this.setState({ [state]: e.target.value })
-  // }
 
   onDelete = id => {
     const userId = this.props.match.params.userId
@@ -267,18 +237,13 @@ class Logs extends Component {
     })
   }
 
-  toggleDrawer = (side, open) => {
-    this.setState({
-      [side]: open
-    })
-  }
 
   render() {
-    const { isEditMealShowing } = this.state
+    const { settingsBottom, logsCount, mealLogs, page } = this.state
     const dietBroken = this.state.totalCalories > this.state.expectedCalories
     return (
       <AuthConsumer>
-        {({ isAuth, login, role, logout }) => (
+        {({ logout }) => (
           <Wrapper>
             <BaseHeader role={this.props.role} onLogout={logout} />
             <Settings
@@ -288,46 +253,37 @@ class Logs extends Component {
               expectedCalories={this.state.expectedCalories}
               toggleDrawer={this.toggleDrawer}
               totalCalories={this.state.totalCalories}
-              settingsBottom={this.state.settingsBottom}
+              settingsBottom={settingsBottom}
             />
             <Filter
+              handleChange={this.handleChange}
               onSearch={this.onSearch}
-              toggleDrawer={this.toggleDrawer}
               filterBottom={this.state.filterBottom}
               fromDate={this.state.fromDate}
               toDate={this.state.toDate}
-              onFromDateChange={this.onFromDateChange}
-              onToDateChange={this.onToDateChange}
               fromTime={this.state.fromTime}
               toTime={this.state.toTime}
-              onFromTimeChange={this.onFromTimeChange}
-              onToTimeChange={this.onToTimeChange}
             />
             <AddRecord
-              isEditMealShowing={isEditMealShowing}
               addBottom={this.state.addBottom}
               isAdd={this.state.isAdd}
               addTime={this.state.addTime}
               addDate={this.state.addDate}
-              stateModifier={this.stateModifier}
-              onAddDateChange={this.onAddDateChange}
-              onAddTimeChange={this.onAddTimeChange}
+              handleChange={this.handleChange}
               addTitle={this.state.addTitle}
-              onAddTitleChange={this.onAddTitleChange}
               onAddCaloriesChange={this.onAddCaloriesChange}
               saveError={this.state.saveError}
               saveErrorText={this.state.saveErrorText}
               onSave={this.onSave}
               addCalories={this.state.addCalories}
-              toggleDrawer={this.toggleDrawer}
             />
             <InnerWrapper>
-            <Header toggleDrawer={this.toggleDrawer} editOpenHandler={this.editOpenHandler} />
+            <Header toggleDrawer={this.handleChange} editOpenHandler={this.editOpenHandler} />
               <Records>
             <TableHeader />
                 {this.renderRecords()}
-                {this.state.logsCount > this.state.mealLogs.length && (
-                  <Button onClick={() => this.loadMore(this.state.page)} color='lightGreen'>
+                {logsCount > mealLogs.length && (
+                  <Button onClick={() => this.loadMore(page)} color='lightGreen'>
                     More
                   </Button>
                 )}
@@ -353,7 +309,7 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    mealLogs: state.mealLogs.data,
+    mealLogs: state.record.data,
     userInfo: state.user.data
   }
 }

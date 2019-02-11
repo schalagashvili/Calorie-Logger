@@ -10,8 +10,8 @@ const style = {
   width: 265
 }
 
-function DatePicker(props) {
-  const { classes, headerText, onChange } = props
+function DatePickers(props) {
+  const {  headerText, onChange } = props
   return (
     <Wrapper>
       <InputHeader>{headerText}</InputHeader>
@@ -21,7 +21,7 @@ function DatePicker(props) {
         type='date'
         value={props.date}
         // defaultValue={props.date || new Date().toISOString().substr(0, 10)}
-        className={classes.textField}
+        // className={classes.textField}
         InputLabelProps={{
           shrink: true
         }}
@@ -32,4 +32,4 @@ function DatePicker(props) {
 }
 
 
-export default DatePicker
+export default DatePickers
