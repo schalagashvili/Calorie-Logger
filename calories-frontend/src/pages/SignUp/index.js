@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Wrapper, LoginContainer, InputField, InputWrapper, ErrorText } from './styles'
+import { Link } from 'react-router-dom'
+import { Wrapper, LoginContainer, InputField, InputWrapper, ErrorText, SignIn } from './styles'
 import { validateEmail } from '../../utility'
 import { isEmpty } from 'lodash'
 import { AuthConsumer } from '../../AuthContext'
@@ -24,7 +25,7 @@ class SignUp extends Component {
     if (!validateEmail(email)) {
       this.setState({ emailErrorText: '* Please input valid email', emailError: 1 })
     } else {
-      this.setState({ email, emailErrorText: '', emailError: 0 })
+      this.setState({ email, emailErrorText: '', emailError: 0, submitError: '' })
     }
   }
 
@@ -33,7 +34,8 @@ class SignUp extends Component {
     if (password == null || password.length < 6) {
       this.setState({
         passwordError: '* Password length should be 6 or more',
-        passwordError1: 1
+        passwordError1: 1,
+        submitError: ''
       })
     } else {
       this.setState({ password1: password, passwordError: '', passwordError1: 0 })
@@ -45,7 +47,8 @@ class SignUp extends Component {
     if (password == null || password.length < 6) {
       this.setState({
         confirmPasswordError: '* Password length should be 6 or more',
-        passwordError2: 1
+        passwordError2: 1,
+        submitError: ''
       })
     } else {
       this.setState({ confirmPassword: password, confirmPasswordError: '', passwordError2: 0 })
@@ -90,20 +93,37 @@ class SignUp extends Component {
           <Wrapper>
             <LoginContainer>
               <InputWrapper error={emailError}>
-                <InputField onChange={e => this.onEmailChange(e)} type='email' placeholder='E-Mail' borderColor={emailError === 1 && 'red'}  />
+                <InputField
+                  onChange={e => this.onEmailChange(e)}
+                  type='email'
+                  placeholder='E-Mail'
+                  borderColor={emailError === 1 && 'red'}
+                />
               </InputWrapper>
               {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
               <InputWrapper error={passwordError1}>
-                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Enter password' borderColor={passwordError1 === 1 && 'red'} />
+                <InputField
+                  onChange={e => this.onPasswordChange(e)}
+                  type='password'
+                  placeholder='Enter password'
+                  borderColor={passwordError1 === 1 && 'red'}
+                />
               </InputWrapper>
               {passwordError1 === 1 ? <ErrorText>{passwordError}</ErrorText> : null}
               <InputWrapper error={passwordError2}>
-                <InputField onChange={e => this.onRePasswordChange(e)} type='password' placeholder='Re-enter password' borderColor={passwordError2 === 1 && 'red'} />
+                <InputField
+                  onChange={e => this.onRePasswordChange(e)}
+                  type='password'
+                  placeholder='Re-enter password'
+                  borderColor={passwordError2 === 1 && 'red'}
+                />
               </InputWrapper>
               {passwordError2 === 1 ? <ErrorText>{this.state.confirmPasswordError}</ErrorText> : null}
               {submitError === 1 ? <ErrorText>{this.state.submitErrorText}</ErrorText> : null}
               <StyledButton onClick={() => this.onSubmit(login)}>Sign Up</StyledButton>
-              <div>Login</div>
+              <Link to='/login' style={{ backgroundColor: 'transparent' }}>
+                <SignIn>Sign In</SignIn>
+              </Link>
             </LoginContainer>
           </Wrapper>
         )}

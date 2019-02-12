@@ -40,7 +40,7 @@ export const LoginContainer = styled.div`
 export const InputField = styled.input`
   width: 300px;
   height: 55px;
-  border: 1px solid ${props => props.borderColor ? props.borderColor : '#dce0e0'};
+  border: 1px solid ${props => (props.borderColor ? props.borderColor : '#dce0e0')};
   border-radius: 35px;
   outline: none;
   color: white;
@@ -59,4 +59,13 @@ export const Register = styled.div`
 
 export const InputWrapper = styled.div`
   position: relative;
+`
+
+export const SignIn = styled.div`
+  color: white;
+  margin-top: 20px;
+  font-weight: bold;
+  background-color: transparent;
+  letter-spacing: 0.7px;
+  cursor: pointer;
 `

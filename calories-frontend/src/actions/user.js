@@ -24,13 +24,11 @@ import {
   EDIT_USER_CALORIES_SUCCEEDED,
   EDIT_USER_CALORIES_FAILED
 } from '../actionTypes'
-import {
-  RSAA
-} from 'redux-api-middleware'
+import { RSAA } from 'redux-api-middleware'
 import config from '../config'
 
 export function getUser(userId, token) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/getUser/${userId != null ? userId : ''}`,
@@ -44,9 +42,8 @@ export function getUser(userId, token) {
   }
 }
 
-
 export function editUserCalories(userId, token, expectedCalories) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/editUser/${userId != null ? userId : ''}`,
@@ -54,7 +51,7 @@ export function editUserCalories(userId, token, expectedCalories) {
         headers: {
           Authorization: token
         },
-        method: 'post', //????
+        method: 'post',
         body: JSON.stringify({
           expectedCalories
         })
@@ -64,7 +61,7 @@ export function editUserCalories(userId, token, expectedCalories) {
 }
 
 export function userLogin(email, password) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/signIn`,
@@ -80,40 +77,37 @@ export function userLogin(email, password) {
 }
 
 export function deleteUser(id, token) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
-        endpoint: `${config.apiUrl}/deleteUser${id}`,
+        endpoint: `${config.apiUrl}/deleteUser/${id}`,
         types: [DELETE_USER_STARTED, DELETE_USER_SUCCEEDED, UDELETE_USER_FAILED],
         method: 'delete',
         headers: {
           Authorization: token
-        },
+        }
       }
     })
   }
 }
 
 export function getAllUsers(token, page) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
-        endpoint: `${config.apiUrl}/getAllUsers`,
+        endpoint: `${config.apiUrl}/getAllUsers/${page}`,
         types: [GET_ALL_USERS_STARTED, GET_ALL_USERS_SUCCEEDED, GET_ALL_USERS_FAILED],
         method: 'get',
         headers: {
           Authorization: token
-        },
-        body: JSON.stringify({
-          page
-        })
+        }
       }
     })
   }
 }
 
 export function editUser(viewId, token, role) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/editUser/${viewId}`,
@@ -131,7 +125,7 @@ export function editUser(viewId, token, role) {
 }
 
 export function addNewUser(email, password, role, token) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/createUser`,
@@ -151,7 +145,7 @@ export function addNewUser(email, password, role, token) {
 }
 
 export function userSignUp(email, password) {
-  return async function (dispatch) {
+  return async function(dispatch) {
     await dispatch({
       [RSAA]: {
         endpoint: `${config.apiUrl}/signUp`,

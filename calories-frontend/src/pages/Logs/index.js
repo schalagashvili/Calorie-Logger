@@ -10,32 +10,35 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { addMealLog, editMealLog, getMealLogs, removeMealLog } from '../../actions/record'
 import { getUser, editUserCalories } from '../../actions/user'
-import ReactPaginate from 'react-paginate'
 
 class Logs extends Component {
   constructor(props) {
     super(props)
-    const day = new Date()
-    const today = new Date().toISOString().substr(0, 10)
-    const yesterday = day.setDate(day.getDate() - 1)
+    const timeNow = new Date().toTimeString().substr(0, 5)
+    const dateNow = new Date().toISOString().substr(0, 10)
+    const yesterday = moment()
+      .subtract(1, 'days')
+      .toISOString()
+      .substr(0, 10)
+
     this.state = {
       expectedCalories: 0,
       totalCalories: 0,
       mealLogs: [],
       fromDate: yesterday,
-      toDate: today,
+      toDate: dateNow,
       addBottom: false,
       settingsBottom: false,
       filterBottom: false,
       page: 1,
+      today: dateNow,
       logsCount: null,
       addTitle: '',
       addCalories: '',
-      today: today,
-      addDate: new Date().toISOString().substr(0, 10),
-      addTime: new Date().toTimeString().substr(0, 5),
-      fromTime: new Date().toTimeString().substr(0, 5),
-      toTime: new Date().toTimeString().substr(0, 5)
+      addDate: dateNow,
+      addTime: timeNow,
+      fromTime: timeNow,
+      toTime: timeNow
     }
   }
 
@@ -46,7 +49,6 @@ class Logs extends Component {
     await this.props.getUser(userId, token)
 
     const user = this.props.userInfo.user
-    console.log(user.expectedCalories)
     this.setState({
       expectedCalories: user.expectedCalories,
       email: user.email
@@ -88,7 +90,6 @@ class Logs extends Component {
   onSearch = async () => {
     const token = this.props.token
     const userId = this.props.match.params.userId
-    console.log(userId)
     const { fromDate, toDate, fromTime, toTime, page } = this.state
     await this.props.getMealLogs(fromDate, toDate, fromTime, toTime, page, userId, token)
 
@@ -106,6 +107,7 @@ class Logs extends Component {
   }
 
   editOpenHandler = (isAdd, id) => {
+    console.log(id, 'აიდიიიი')
     if (isAdd) {
       const addDate = new Date().toISOString().substr(0, 10)
       const addTime = new Date().toTimeString().substr(0, 5)
@@ -149,32 +151,35 @@ class Logs extends Component {
   }
 
   onSave = async () => {
-    let { addDate, addTime, addTitle, addCalories, isAdd, editId, today } = this.state
+    let { addDate, addTime, addTitle, addCalories, isAdd, editId } = this.state
     const token = this.props.token
 
     if (addTitle === '' || addCalories === '') {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
-    } 
+    }
 
-    // a.diff(b) // a - b < 0
-    // b.diff(a) // b - a > 0
-    // today.diff(addDate, 'days')
-    // else if (addDate === today) {
-    //   return this.setState({ saveError: 1, saveErrorText: 'You can`t add meals for future days' })
-    // }
-
+    var currentDate = moment(this.state.today)
+    var selectedDate = moment(this.state.addDate)
+    const isFutureDate = currentDate.diff(selectedDate, 'days')
+    if (isFutureDate < 0) {
+      return this.setState({ saveError: 1, saveErrorText: 'Can`t add meal for future dates' })
+    }
 
     this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '', saveError: null, addBottom: false })
-    const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
+    const datetime = moment(`${addDate} ${addTime}`)
     const userId = this.props.match.params.userId
     let mealLogs = this.state.mealLogs
     let totalCalories = 0
     if (isAdd) {
       await this.props.addMealLog(addTitle, addCalories, datetime, token, userId)
+
+      console.log(this.props.newMealLog, 'ახალიი')
+
       mealLogs = insertFunc(mealLogs, 0, {
         title: addTitle,
         calories: addCalories,
         date: datetime
+        // _id
       })
       if (mealLogs != null) {
         mealLogs.map(log => (totalCalories += log.calories))
@@ -223,7 +228,7 @@ class Logs extends Component {
     let { mealLogs, totalCalories, expectedCalories } = this.state
     return mealLogs.map(log => {
       let { date, calories, title, _id } = log
-      date = moment.tz(date, 'Asia/Tbilisi').format('YYYY-MM-DD HH:mm')
+      date = moment(date).format('YYYY-MM-DD HH:mm')
       return (
         <Record
           totalCalories={totalCalories}
@@ -239,15 +244,6 @@ class Logs extends Component {
       )
     })
   }
-
-  handlePageClick = data => {
-    let selected = data.selected;
-    let offset = Math.ceil(selected * this.props.perPage);
-
-    this.setState({ offset: offset }, () => {
-      // this.loadCommentsFromServer();
-    });
-  };
 
   render() {
     const { settingsBottom, logsCount, mealLogs, page } = this.state
@@ -293,25 +289,14 @@ class Logs extends Component {
                 toggleDrawer={this.handleChange}
                 editOpenHandler={this.editOpenHandler}
                 expectedCalories={this.state.expectedCalories}
-                fromTime={this.state.fromTime} toTime={this.state.toTime}
+                fromTime={this.state.fromTime}
+                toTime={this.state.toTime}
                 fromDate={this.state.fromDate}
                 toDate={this.state.toDate}
+                totalCalories={this.state.totalCalories}
               />
               <Records>
                 <TableHeader />
-                <ReactPaginate
-                previousLabel={'previous'}
-                nextLabel={'next'}
-                breakLabel={'...'}
-                breakClassName={'break-me'}
-                pageCount={20}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                // onPageChange={this.handlePageClick}
-                containerClassName={'pagination'}
-                subContainerClassName={'pages pagination'}
-                activeClassName={'active'}
-              />
                 {this.renderRecords()}
                 {logsCount > mealLogs.length && (
                   <Button onClick={() => this.loadMore(page)} color='lightGreen'>
@@ -341,7 +326,8 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     mealLogs: state.record.data,
-    userInfo: state.user.data
+    userInfo: state.user.data,
+    newMealLog: state
   }
 }
 

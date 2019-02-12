@@ -18,8 +18,8 @@ class RecordItem extends Component {
         )}
         <Title>{title}</Title>
         <Calories>{calories}</Calories>
-        <DateText>{moment.tz(date, 'Asia/Tbilisi').format('MM/DD/YYYY')}</DateText>
-        <Time>{moment.tz(date, 'Asia/Tbilisi').format('HH:mm')}</Time>
+        <DateText>{moment(date).format('MM/DD/YYYY')}</DateText>
+        <Time>{moment(date).format('HH:mm')}</Time>
         <IconsWrapper>
           <Icon
             onClick={() => {

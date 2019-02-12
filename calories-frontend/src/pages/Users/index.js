@@ -23,7 +23,20 @@ class Home extends Component {
     viewRole: null,
     viewId: null,
     addBottom: false,
-    editBottom: false
+    editBottom: false,
+    users: [],
+    page: 1
+  }
+
+  async componentDidMount() {
+    const { token, role, page } = this.props
+    if (role !== 'admin' && role !== 'manager') {
+      history.push('/logs')
+    } else {
+      await this.props.getAllUsers(token, page)
+
+      this.setState({ users: this.props.allUsers.users || [] })
+    }
   }
 
   onAddNewUser = async () => {
@@ -38,8 +51,10 @@ class Home extends Component {
       const _id = this.props.newUser._id
       let users = this.state.users
       users.push({ _id, email: addEmail, role: addRole })
+      const newArr = [{ _id, email: addEmail, role: addRole }, ...users]
+      console.log(users)
       this.setState({
-        users,
+        users: newArr,
         addError: null,
         addEmail: null,
         addPassword: null,
@@ -59,17 +74,6 @@ class Home extends Component {
     const targetIndex = users.findIndex(user => user._id === viewId)
     users[targetIndex] = { _id: viewId, email: viewEmail, role: viewRole }
     this.setState({ users, viewId: null, viewEmail: '', viewRole: 'regular', editBottom: false })
-  }
-
-  async componentDidMount() {
-    const { token, role } = this.props
-    if (role !== 'admin' && role !== 'manager') {
-      history.push('/logs')
-    } else {
-      await this.props.getAllUsers(token)
-
-      this.setState({ users: this.props.allUsers.users || [] })
-    }
   }
 
   onEmailChange = e => {
@@ -109,6 +113,7 @@ class Home extends Component {
 
   renderUsers = originalEmail => {
     const users = this.state.users || []
+    console.log(users, 'იუზერები')
     return users.map(user => {
       let { email, role, _id } = user
       if (email === originalEmail) return null

@@ -20,4 +20,9 @@ injectGlobal`
   body {
     margin: 0;
   }
+
+  a {
+    color: #FFF;
+  }
+
 `

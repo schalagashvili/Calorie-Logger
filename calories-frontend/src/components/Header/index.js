@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Button } from '../../styles/mixins'
 import { Wrapper, ButtonsWrapper, CalorieInfo } from './styles'
+import moment from 'moment-timezone'
 
 class Header extends Component {
   render() {
@@ -36,8 +37,12 @@ class Header extends Component {
           </Button>
         </ButtonsWrapper>
         <CalorieInfo>
-          <div>From date {fromDate} to date{toDate}</div>
-          <div>from time {fromTime} to time {toTime}</div>
+          <div>
+            From time {moment(fromDate).format('DD MMM YYYY')} {fromTime} to date {moment(toDate).format('DD MMM YYYY')}
+          </div>
+          <div>
+            from time {fromTime} to time {toTime}
+          </div>
           <div style={{ fontSize: 13, color: 'grey' }}>Expected Calories: {expectedCalories}</div>
           <div style={{ fontSize: 13, color: 'grey', borderLeft: '1px solid grey' }}>Total: {totalCalories}</div>
         </CalorieInfo>

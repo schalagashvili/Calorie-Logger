@@ -13,18 +13,21 @@ import {
 export default (state = {}, action) => {
   switch (action.type) {
     case ADD_RECORD_STARTED:
+      console.log(action, 'ექშენი')
       return {
         loading: true,
         errors: {},
         data: {}
       }
     case ADD_RECORD_SECCEEDED:
+      console.log(action, 'ექშენი')
       return {
         loading: false,
         errors: {},
         data: action.payload
       }
     case ADD_RECORD_FAILED:
+      console.log(action, 'ექშენი')
       return {
         loading: false,
         errors: action.payload,
@@ -65,6 +68,7 @@ export default (state = {}, action) => {
         data: action.payload
       }
     case EDIT_RECORD_FAILED:
+      console.log(action, 'ექშენი')
       return {
         loading: false,
         errors: action.payload,

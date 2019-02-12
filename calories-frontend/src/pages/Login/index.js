@@ -25,8 +25,7 @@ class Login extends Component {
         emailError: 1,
         submitErrorText: ''
       })
-    } 
-    else {
+    } else {
       this.setState({ email, emailErrorText: '', emailError: 0 })
     }
   }
@@ -100,7 +99,12 @@ class Login extends Component {
                 <InputField onChange={e => this.onEmailChange(e)} placeholder='E-Mail' borderColor={emailError === 1 && 'red'} />
 
                 {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
-                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Password' borderColor={passwordError === 1 && 'red'} />
+                <InputField
+                  onChange={e => this.onPasswordChange(e)}
+                  type='password'
+                  placeholder='Password'
+                  borderColor={passwordError === 1 && 'red'}
+                />
                 {passwordError === 1 ? <ErrorText>{passwordErrorText}</ErrorText> : null}
                 {submitError === 1 ? <ErrorText>{submitErrorText}</ErrorText> : null}
                 <StyledButton onClick={() => this.onSubmit(login)}>Log In</StyledButton>
