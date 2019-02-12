@@ -22,9 +22,11 @@ class Login extends Component {
     if (!validateEmail(email)) {
       this.setState({
         emailErrorText: '* Please input valid email',
-        emailError: 1
+        emailError: 1,
+        submitErrorText: ''
       })
-    } else {
+    } 
+    else {
       this.setState({ email, emailErrorText: '', emailError: 0 })
     }
   }
@@ -34,7 +36,8 @@ class Login extends Component {
     if (password == null || password.length < 6) {
       this.setState({
         passwordErrorText: '* Password length should be 6 or more',
-        passwordError: 1
+        passwordError: 1,
+        submitErrorText: ''
       })
     } else {
       this.setState({ password, passwordErrorText: '', passwordError: 0 })
@@ -45,7 +48,7 @@ class Login extends Component {
     const { emailError, passwordError1, password, email } = this.state
 
     if (password === '' || email === '') {
-      return this.setState({ submitError: 1, submitErrorText: 'Please fill in fields' })
+      return this.setState({ submitError: 1, submitErrorText: '* Please fill in fields' })
     }
 
     if (emailError === 1 || passwordError1 === 1) {
@@ -67,7 +70,7 @@ class Login extends Component {
 
       outerThis.setState({
         submitError: 1,
-        submitErrorText: errorStatus === 401 ? 'Username and password dont match!' : 'Server error occurred...'
+        submitErrorText: errorStatus === 401 ? '* Username and password dont match!' : '* Server error occurred...'
       })
     }
   }
