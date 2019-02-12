@@ -10,27 +10,31 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { addMealLog, editMealLog, getMealLogs, removeMealLog } from '../../actions/record'
 import { getUser, editUserCalories } from '../../actions/user'
+import ReactPaginate from 'react-paginate'
 
 class Logs extends Component {
   constructor(props) {
     super(props)
+    const day = new Date()
     const today = new Date().toISOString().substr(0, 10)
+    const yesterday = day.setDate(day.getDate() - 1)
     this.state = {
       expectedCalories: 0,
       totalCalories: 0,
       mealLogs: [],
-      fromDate: today,
+      fromDate: yesterday,
+      toDate: today,
       addBottom: false,
       settingsBottom: false,
       filterBottom: false,
-      toDate: today,
       page: 1,
       logsCount: null,
       addTitle: '',
       addCalories: '',
+      today: today,
       addDate: new Date().toISOString().substr(0, 10),
       addTime: new Date().toTimeString().substr(0, 5),
-      fromTime: '00:00',
+      fromTime: new Date().toTimeString().substr(0, 5),
       toTime: new Date().toTimeString().substr(0, 5)
     }
   }
@@ -145,12 +149,20 @@ class Logs extends Component {
   }
 
   onSave = async () => {
-    let { addDate, addTime, addTitle, addCalories, isAdd, editId } = this.state
+    let { addDate, addTime, addTitle, addCalories, isAdd, editId, today } = this.state
     const token = this.props.token
 
     if (addTitle === '' || addCalories === '') {
       return this.setState({ saveError: 1, saveErrorText: 'Please fill all fields' })
-    }
+    } 
+
+    // a.diff(b) // a - b < 0
+    // b.diff(a) // b - a > 0
+    // today.diff(addDate, 'days')
+    // else if (addDate === today) {
+    //   return this.setState({ saveError: 1, saveErrorText: 'You can`t add meals for future days' })
+    // }
+
 
     this.setState({ addDate: '', addTime: '', addTitle: '', addCalories: '', saveError: null, addBottom: false })
     const datetime = moment.tz(`${addDate} ${addTime}`, 'Asia/Tbilisi').toDate()
@@ -228,6 +240,15 @@ class Logs extends Component {
     })
   }
 
+  handlePageClick = data => {
+    let selected = data.selected;
+    let offset = Math.ceil(selected * this.props.perPage);
+
+    this.setState({ offset: offset }, () => {
+      // this.loadCommentsFromServer();
+    });
+  };
+
   render() {
     const { settingsBottom, logsCount, mealLogs, page } = this.state
     const dietBroken = this.state.totalCalories > this.state.expectedCalories
@@ -272,9 +293,25 @@ class Logs extends Component {
                 toggleDrawer={this.handleChange}
                 editOpenHandler={this.editOpenHandler}
                 expectedCalories={this.state.expectedCalories}
+                fromTime={this.state.fromTime} toTime={this.state.toTime}
+                fromDate={this.state.fromDate}
+                toDate={this.state.toDate}
               />
               <Records>
                 <TableHeader />
+                <ReactPaginate
+                previousLabel={'previous'}
+                nextLabel={'next'}
+                breakLabel={'...'}
+                breakClassName={'break-me'}
+                pageCount={20}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                // onPageChange={this.handlePageClick}
+                containerClassName={'pagination'}
+                subContainerClassName={'pages pagination'}
+                activeClassName={'active'}
+              />
                 {this.renderRecords()}
                 {logsCount > mealLogs.length && (
                   <Button onClick={() => this.loadMore(page)} color='lightGreen'>

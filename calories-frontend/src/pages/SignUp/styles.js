@@ -40,7 +40,7 @@ export const LoginContainer = styled.div`
 export const InputField = styled.input`
   width: 300px;
   height: 55px;
-  border: 1px solid #dce0e0;
+  border: 1px solid ${props => props.borderColor ? props.borderColor : '#dce0e0'};
   border-radius: 35px;
   outline: none;
   color: white;

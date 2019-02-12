@@ -4,7 +4,7 @@ import { Wrapper, ButtonsWrapper, CalorieInfo } from './styles'
 
 class Header extends Component {
   render() {
-    const { totalCalories, expectedCalories, editOpenHandler, toggleDrawer } = this.props
+    const { totalCalories, expectedCalories, editOpenHandler, toggleDrawer, fromTime, toTime, fromDate, toDate } = this.props
 
     return (
       <Wrapper>
@@ -36,7 +36,8 @@ class Header extends Component {
           </Button>
         </ButtonsWrapper>
         <CalorieInfo>
-          <div>From date to date</div>
+          <div>From date {fromDate} to date{toDate}</div>
+          <div>from time {fromTime} to time {toTime}</div>
           <div style={{ fontSize: 13, color: 'grey' }}>Expected Calories: {expectedCalories}</div>
           <div style={{ fontSize: 13, color: 'grey', borderLeft: '1px solid grey' }}>Total: {totalCalories}</div>
         </CalorieInfo>

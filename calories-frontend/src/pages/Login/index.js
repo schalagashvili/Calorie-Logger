@@ -42,10 +42,10 @@ class Login extends Component {
   }
 
   async onSubmit(login) {
-    const { emailError, passwordError1 } = this.state
+    const { emailError, passwordError1, password, email } = this.state
 
-    if (this.state.password === '' || this.state.email === '') {
-      return this.setState({ submitError: 1, submitErrorText: 'Please fill fields' })
+    if (password === '' || email === '') {
+      return this.setState({ submitError: 1, submitErrorText: 'Please fill in fields' })
     }
 
     if (emailError === 1 || passwordError1 === 1) {
@@ -54,7 +54,7 @@ class Login extends Component {
     this.setState({ submitError: 0, submitErrorText: '' })
     const outerThis = this
 
-    await this.props.userLogin(this.state.email, this.state.password)
+    await this.props.userLogin(email, password)
     const user = this.props.loggedUser
 
     if (!isEmpty(user)) {
@@ -94,10 +94,10 @@ class Login extends Component {
           return (
             <Wrapper>
               <LoginContainer>
-                <InputField onChange={e => this.onEmailChange(e)} placeholder='E-Mail' />
+                <InputField onChange={e => this.onEmailChange(e)} placeholder='E-Mail' borderColor={emailError === 1 && 'red'} />
 
                 {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
-                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Password' />
+                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Password' borderColor={passwordError === 1 && 'red'} />
                 {passwordError === 1 ? <ErrorText>{passwordErrorText}</ErrorText> : null}
                 {submitError === 1 ? <ErrorText>{submitErrorText}</ErrorText> : null}
                 <StyledButton onClick={() => this.onSubmit(login)}>Log In</StyledButton>

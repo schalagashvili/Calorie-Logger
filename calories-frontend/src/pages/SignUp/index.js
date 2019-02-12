@@ -90,15 +90,15 @@ class SignUp extends Component {
           <Wrapper>
             <LoginContainer>
               <InputWrapper error={emailError}>
-                <InputField onChange={e => this.onEmailChange(e)} type='email' placeholder='E-Mail' />
+                <InputField onChange={e => this.onEmailChange(e)} type='email' placeholder='E-Mail' borderColor={emailError === 1 && 'red'}  />
               </InputWrapper>
               {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
               <InputWrapper error={passwordError1}>
-                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Enter password' />
+                <InputField onChange={e => this.onPasswordChange(e)} type='password' placeholder='Enter password' borderColor={passwordError1 === 1 && 'red'} />
               </InputWrapper>
               {passwordError1 === 1 ? <ErrorText>{passwordError}</ErrorText> : null}
               <InputWrapper error={passwordError2}>
-                <InputField onChange={e => this.onRePasswordChange(e)} type='password' placeholder='Re-enter password' />
+                <InputField onChange={e => this.onRePasswordChange(e)} type='password' placeholder='Re-enter password' borderColor={passwordError2 === 1 && 'red'} />
               </InputWrapper>
               {passwordError2 === 1 ? <ErrorText>{this.state.confirmPasswordError}</ErrorText> : null}
               {submitError === 1 ? <ErrorText>{this.state.submitErrorText}</ErrorText> : null}

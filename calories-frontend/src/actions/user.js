@@ -54,7 +54,7 @@ export function editUserCalories(userId, token, expectedCalories) {
         headers: {
           Authorization: token
         },
-        method: 'put',
+        method: 'post', //????
         body: JSON.stringify({
           expectedCalories
         })
@@ -94,7 +94,7 @@ export function deleteUser(id, token) {
   }
 }
 
-export function getAllUsers(token) {
+export function getAllUsers(token, page) {
   return async function (dispatch) {
     await dispatch({
       [RSAA]: {
@@ -104,6 +104,9 @@ export function getAllUsers(token) {
         headers: {
           Authorization: token
         },
+        body: JSON.stringify({
+          page
+        })
       }
     })
   }
