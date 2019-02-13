@@ -3,6 +3,7 @@ import { Header } from '../../pages/Logs/styles'
 import history from '../../history'
 import { Link } from 'react-router-dom'
 import { Button } from '../../styles/mixins'
+import colors from '../../styles/colors'
 
 export default class BaseHeader extends React.Component {
   onLogout() {
@@ -18,10 +19,10 @@ export default class BaseHeader extends React.Component {
           <div>
             {window.location.pathname === '/logs' ? (
               <Link to='/users'>
-                <Button color='tomato'>Users</Button>
+                <Button color={colors.tomato}>Users</Button>
               </Link>
             ) : (
-              <Button color='tomato'>
+              <Button color={colors.tomato}>
                 <Link to='/logs'>Logs</Link>
               </Button>
             )}
@@ -32,7 +33,7 @@ export default class BaseHeader extends React.Component {
             role === 'admin' || role === 'manager' ? history.push('/users') : history.push('logs')
           }}
         />
-        <Button onClick={() => this.onLogout()} logout color='rgba(0, 0, 0, 0.5)'>
+        <Button onClick={() => this.onLogout()} logout color={colors.pink}>
           Logout
         </Button>
       </Header>

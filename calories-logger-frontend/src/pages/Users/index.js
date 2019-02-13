@@ -11,6 +11,7 @@ import { AuthConsumer } from '../../AuthContext'
 import { deleteUser, getAllUsers, editUser, addNewUser } from '../../actions/user'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import colors from '../../styles/colors'
 
 class Home extends Component {
   state = {
@@ -212,7 +213,7 @@ class Home extends Component {
                       </Role>
                     )}
                     <Buttons>
-                      <Button color='rgb(225, 0, 80)' onClick={() => this.onEditUser()}>
+                      <Button color={colors.pink} onClick={() => this.onEditUser()}>
                       Save
                       </Button>
                    
@@ -225,13 +226,12 @@ class Home extends Component {
               </Add>
             </Drawer>
             <InnerWrapper>
-              <Button color='#5FBA7D' onClick={() => this.setState({ addBottom: true })}>
+              <Button color={colors.green} onClick={() => this.setState({ addBottom: true })}>
                 Add New
               </Button>
               <Records>
                 <RecordsHeader>Users</RecordsHeader>
                 {this.renderUsers(email)}
-                {console.log(this.state.usersCount, this.state.users.length)}
                 {(this.state.usersCount > this.state.users.length) && 
                   (
                   <Button onClick={() => this.loadMore()} color='lightGreen'>

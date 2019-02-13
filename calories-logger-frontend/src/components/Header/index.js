@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from '../../styles/mixins'
 import { Wrapper, ButtonsWrapper, CalorieInfo } from './styles'
 import moment from 'moment-timezone'
+import colors from '../../styles/colors'
 
 class Header extends Component {
   render() {
@@ -11,7 +12,7 @@ class Header extends Component {
       <Wrapper>
         <ButtonsWrapper>
           <Button
-            color='#5FBA7D'
+            color={colors.green}
             onClick={() => {
               editOpenHandler(true)
               toggleDrawer('addBottom', true)
@@ -20,7 +21,7 @@ class Header extends Component {
             Add
           </Button>
           <Button
-            color='#2196f3'
+            color={colors.blue}
             onClick={() => {
               toggleDrawer('filterBottom', true)
             }}
@@ -28,7 +29,7 @@ class Header extends Component {
             Filter
           </Button>
           <Button
-            color='rgb(225, 0, 80)'
+            color={colors.pink}
             onClick={() => {
               toggleDrawer('settingsBottom', true)
             }}

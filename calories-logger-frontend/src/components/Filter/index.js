@@ -3,6 +3,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { FilterWrapper, PickerWrapper, Title } from './styles'
 import { Button  } from '../../styles/mixins'
 import { DatePicker, TimePicker  } from '../../components'
+import colors from '../../styles/colors'
 
 class Filter extends Component {
   render() {
@@ -43,11 +44,11 @@ class Filter extends Component {
               onSearch()
               handleChange('filterBottom', false)
             }}
-            color='rgb(225, 0, 80)'
+            color={colors.pink}
           >
             Search
           </Button>
-          <Button onClick={() => handleChange('filterBottom', false)} color='grey'>
+          <Button onClick={() => handleChange('filterBottom', false)} color={colors.grey}>
             Cancel
           </Button>
         </FilterWrapper>

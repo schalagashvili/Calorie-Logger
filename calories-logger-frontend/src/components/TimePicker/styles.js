@@ -14,3 +14,11 @@ export const Wrapper = styled.div`
   display: flex;
   margin-top: 20px;
 `
+
+export const style = {
+  borderRadius: 4,
+  height: 45,
+  flex: 1,
+  maxWidth: 600,
+  width: 265
+}

@@ -56,3 +56,7 @@ export const Buttons = styled.div`
   align-items: baseline;
   width: 140px;
 `
+
+export const Close = styled.div`
+  cursor: pointer;
+`

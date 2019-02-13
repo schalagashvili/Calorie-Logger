@@ -203,6 +203,24 @@ class Logs extends Component {
     }
   }
 
+  addRecord =() => {
+    return (
+      <AddRecord
+      addBottom={this.state.addBottom}
+      isAdd={this.state.isAdd}
+      addTime={this.state.addTime}
+      addDate={this.state.addDate}
+      handleChange={this.handleChange}
+      addTitle={this.state.addTitle}
+      onAddCaloriesChange={this.onAddCaloriesChange}
+      saveError={this.state.saveError}
+      saveErrorText={this.state.saveErrorText}
+      onSave={this.onSave}
+      addCalories={this.state.addCalories}
+    />
+    )
+  }
+
   handleChange = (state, value) => {
     this.setState({ [state]: value })
   }
@@ -273,19 +291,7 @@ class Logs extends Component {
               fromTime={this.state.fromTime}
               toTime={this.state.toTime}
             />
-            <AddRecord
-              addBottom={this.state.addBottom}
-              isAdd={this.state.isAdd}
-              addTime={this.state.addTime}
-              addDate={this.state.addDate}
-              handleChange={this.handleChange}
-              addTitle={this.state.addTitle}
-              onAddCaloriesChange={this.onAddCaloriesChange}
-              saveError={this.state.saveError}
-              saveErrorText={this.state.saveErrorText}
-              onSave={this.onSave}
-              addCalories={this.state.addCalories}
-            />
+            {this.addRecord()}
             <InnerWrapper>
               <Header
                 toggleDrawer={this.handleChange}

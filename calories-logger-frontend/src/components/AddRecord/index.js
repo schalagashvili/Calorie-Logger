@@ -4,7 +4,8 @@ import Drawer from '@material-ui/core/Drawer'
 import { SaveErrorText } from '../../pages/SignUp/styles'
 import { DatePicker, TimePicker } from '../../components'
 import { Add, Container, InnerWrapper, RecordsHeader } from './styles'
-import { ButtonsWrapper } from '../Header/styles';
+import { ButtonsWrapper } from '../Header/styles'
+import colors from '../../styles/colors'
 
 class AddRecord extends Component {
   render() {
@@ -42,15 +43,10 @@ class AddRecord extends Component {
                 {saveError === 1 ? <SaveErrorText>{saveErrorText}</SaveErrorText> : null}
               </div>
               <ButtonsWrapper>
-                <Button
-                  onClick={() => {
-                    onSave()
-                  }}
-                  color='#5FBA7D'
-                >
+                <Button onClick={() => onSave()} color={colors.green}>
                   Save
                 </Button>
-                <Button onClick={() => handleChange('addBottom',false)} color='grey'>
+                <Button onClick={() => handleChange('addBottom',false)} color={colors.grey}>
                   Cancel
                 </Button>
               </ButtonsWrapper>

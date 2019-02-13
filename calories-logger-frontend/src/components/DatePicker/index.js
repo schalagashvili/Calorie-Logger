@@ -1,14 +1,8 @@
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
 import { InputHeader, Wrapper } from '../TimePicker/styles'
+import style from './styles'
 
-const style = {
-  borderRadius: 4,
-  height: 45,
-  flex: 1,
-  maxWidth: 600,
-  width: 265
-}
 
 function DatePicker(props) {
   const { headerText, onChange } = props

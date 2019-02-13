@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Drawer from '@material-ui/core/Drawer'
 import { CalorieSettings, ExpectedCalories, TotalCalories, TotalWrapper } from './styles'
 import { Input, Button } from '../../styles/mixins'
+import colors from '../../styles/colors'
 
 class Settings extends Component {
   render() {
@@ -30,15 +31,15 @@ class Settings extends Component {
               updateExpectedCalories()
               handleChange('settingsBottom', false)
             }}
-            color='#5FBA7D'
+            color={colors.green}
           >
             Update
           </Button>
-          <Button onClick={() => handleChange('settingsBottom', false)} color='grey'>
+          <Button onClick={() => handleChange('settingsBottom', false)} color={colors.grey}>
             Cancel
           </Button>
           <TotalWrapper>
-            Total calories : <TotalCalories color={dietBroken ? 'red' : 'rgb(100, 196, 123)'}> {totalCalories}</TotalCalories>
+            Total calories : <TotalCalories color={dietBroken ? colors.red : colors.silver }> {totalCalories}</TotalCalories>
           </TotalWrapper>
         </CalorieSettings>
       </Drawer>

@@ -7,6 +7,7 @@ import { userLogin } from '../../actions/user'
 import { isEmpty } from 'lodash'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import colors from '../../styles/colors'
 
 class Login extends Component {
   state = {
@@ -96,14 +97,14 @@ class Login extends Component {
           return (
             <Wrapper>
               <LoginContainer>
-                <InputField onChange={e => this.onEmailChange(e)} placeholder='E-Mail' borderColor={emailError === 1 && 'red'} />
+                <InputField onChange={e => this.onEmailChange(e)} placeholder='E-Mail' borderColor={emailError === 1 && colors.red} />
 
                 {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
                 <InputField
                   onChange={e => this.onPasswordChange(e)}
                   type='password'
                   placeholder='Password'
-                  borderColor={passwordError === 1 && 'red'}
+                  borderColor={passwordError === 1 && colors.red}
                 />
                 {passwordError === 1 ? <ErrorText>{passwordErrorText}</ErrorText> : null}
                 {submitError === 1 ? <ErrorText>{submitErrorText}</ErrorText> : null}

@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { Input, Button } from '../../styles/mixins'
 import Drawer from '@material-ui/core/Drawer'
 import { ErrorText } from '../../pages/SignUp/styles'
-import { Add, AddContainer, InnerWrapper, RecordsHeader, Role, Buttons } from './styles'
+import { Add, AddContainer, InnerWrapper, RecordsHeader, Role, Buttons, Close } from './styles'
 import CircularProgress from '@material-ui/core/CircularProgress';
+import colors from '../../styles/colors'
 
 class AddRecord extends Component {
   render() {
@@ -54,12 +55,12 @@ class AddRecord extends Component {
               {addError != null ? <ErrorText>{addError}</ErrorText> : null}
               {this.props.addUserLoading &&  <CircularProgress color="secondary" />  }
               <Buttons>
-                <Button color='rgb(225, 0, 80)' onClick={() => onAddNewUser()}>
+                <Button color={colors.pink} onClick={() => onAddNewUser()}>
                   Save
                 </Button>
-                <div style={{ cursor: 'pointer' }} onClick={() => drawerHandler()}>
+                <Close onClick={() => drawerHandler()}>
                   Close
-                </div>
+                </Close>
               </Buttons>
             </AddContainer>
           </InnerWrapper>

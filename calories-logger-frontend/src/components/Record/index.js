@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { DeleteIcon, EditIcon } from '../../assets/icons'
 import moment from 'moment-timezone'
+import colors from '../../styles/colors'
 
 class RecordItem extends Component {
   render() {
@@ -12,9 +13,9 @@ class RecordItem extends Component {
     return (
       <Record key={id}>
         {totalCalories > expectedCalories ? (
-          <FontAwesomeIcon icon={faExclamationCircle} style={{ color: 'rgb(225,0,80)', marginRight: 15 }} />
+          <FontAwesomeIcon icon={faExclamationCircle} style={{ color: colors.pink, marginRight: 15 }} />
         ) : (
-          <FontAwesomeIcon icon={faCheckCircle} style={{ color: '#91c653', marginRight: 15 }} />
+          <FontAwesomeIcon icon={faCheckCircle} style={{ color: colors.black , marginRight: 15 }} />
         )}
         <Title>{title}</Title>
         <Calories>{calories}</Calories>
@@ -27,10 +28,10 @@ class RecordItem extends Component {
               handleChange('addBottom', true)
             }}
           >
-            <EditIcon width={13} height={13} color='gray' />
+            <EditIcon width={13} height={13} color={colors.gray} />
           </Icon>
           <Icon onClick={() => onDelete(id)}>
-            <DeleteIcon width={11} height={11} color='red' />
+            <DeleteIcon width={11} height={11} color={colors.tomato} />
           </Icon>
         </IconsWrapper>
       </Record>

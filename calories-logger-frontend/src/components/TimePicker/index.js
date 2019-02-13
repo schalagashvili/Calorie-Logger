@@ -1,18 +1,10 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import './styles.css'
-import { InputHeader, Wrapper } from './styles'
+import { InputHeader, Wrapper, style } from './styles'
 
-const style = {
-  borderRadius: 4,
-  height: 45,
-  flex: 1,
-  maxWidth: 600,
-  width: 265
-}
 
-function TimePickers(props) {
+function TimePicker(props) {
   const { classes, headerText, marginRight, marginLeft, onChange } = props
   return (
     <Wrapper marginRight={marginRight} marginLeft={marginLeft}>
@@ -35,4 +27,4 @@ function TimePickers(props) {
   )
 }
 
-export default withStyles(styles)(TimePickers)
+export default TimePicker

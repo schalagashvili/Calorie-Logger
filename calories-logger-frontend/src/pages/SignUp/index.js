@@ -8,6 +8,7 @@ import { userSignUp } from '../../actions/user'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { StyledButton } from '../Login/styles'
+import colors from '../../styles/colors'
 
 class SignUp extends Component {
   state = {
@@ -97,7 +98,7 @@ class SignUp extends Component {
                   onChange={e => this.onEmailChange(e)}
                   type='email'
                   placeholder='E-Mail'
-                  borderColor={emailError === 1 && 'red'}
+                  borderColor={emailError === 1 && colors.red}
                 />
               </InputWrapper>
               {emailError === 1 ? <ErrorText>{emailErrorText}</ErrorText> : null}
@@ -106,7 +107,7 @@ class SignUp extends Component {
                   onChange={e => this.onPasswordChange(e)}
                   type='password'
                   placeholder='Enter password'
-                  borderColor={passwordError1 === 1 && 'red'}
+                  borderColor={passwordError1 === 1 && colors.red}
                 />
               </InputWrapper>
               {passwordError1 === 1 ? <ErrorText>{passwordError}</ErrorText> : null}
@@ -115,7 +116,7 @@ class SignUp extends Component {
                   onChange={e => this.onRePasswordChange(e)}
                   type='password'
                   placeholder='Re-enter password'
-                  borderColor={passwordError2 === 1 && 'red'}
+                  borderColor={passwordError2 === 1 && colors.red}
                 />
               </InputWrapper>
               {passwordError2 === 1 ? <ErrorText>{this.state.confirmPasswordError}</ErrorText> : null}
